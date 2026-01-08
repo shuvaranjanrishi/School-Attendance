@@ -35,4 +35,16 @@ interface AttendanceDao {
     @Query("SELECT COUNT(*) FROM attendance_records WHERE date = :date AND status = 'Absent'")
     fun getTotalAbsentByDate(date: String): Flow<Int>
 
+    @Query("SELECT COUNT(*) FROM attendance_records WHERE date LIKE '%' || :monthPattern AND status = 'Present'")
+    fun getMonthPresent(monthPattern: String): Flow<Int>
+
+    @Query("SELECT COUNT(*) FROM attendance_records WHERE date LIKE '%' || :monthPattern AND status = 'Absent'")
+    fun getMonthAbsent(monthPattern: String): Flow<Int>
+
+    @Query("SELECT COUNT(*) FROM attendance_records WHERE date LIKE '%' || :yearPattern AND status = 'Present'")
+    fun getYearPresent(yearPattern: String): Flow<Int>
+
+    @Query("SELECT COUNT(*) FROM attendance_records WHERE date LIKE '%' || :yearPattern AND status = 'Absent'")
+    fun getYearAbsent(yearPattern: String): Flow<Int>
+
 }

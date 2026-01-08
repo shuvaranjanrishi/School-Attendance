@@ -326,4 +326,8 @@
 
     <string name="today_summary">आज का सारांश</string>
     <string name="classes_title">कक्षाएं</string>
+    <string name="today_attendance">आज की उपस्थिति</string>
+    <string name="monthly_attendance">मासिक उपस्थिति</string>
+    <string name="yearly_attendance">वार्षिक उपस्थिति</string>
+    <string name="attendance_rate">उपस्थिति दर</string>
 </resources>

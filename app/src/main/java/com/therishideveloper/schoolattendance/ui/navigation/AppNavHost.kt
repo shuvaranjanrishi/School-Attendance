@@ -3,7 +3,6 @@ package com.therishideveloper.schoolattendance.ui.navigation
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -13,7 +12,6 @@ import com.therishideveloper.schoolattendance.ui.screens.*
 import com.therishideveloper.schoolattendance.ui.viewmodels.*
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue // এটি অবশ্যই থাকতে হবে
-import com.therishideveloper.schoolattendance.data.local.model.DashboardData
 
 @Composable
 fun AppNavHost(
@@ -40,22 +38,10 @@ fun AppNavHost(
                 onAuthSuccess = {}
             )
         }
-        composable("home") {
-            // এখানে 'by' ব্যবহার করলে dashboardData সরাসরি DashboardData অবজেক্ট হয়ে যাবে
-            val dashboardData by homeViewModel.dashboardSummary.collectAsState(
-                initial = DashboardData(
-                    0,
-                    0,
-                    0
-                )
-            )
+        composable(Screen.Home.route) {
             HomeScreen(
-                totalStudents = dashboardData.total, // .value কাটাও
-                presentCount = dashboardData.present, // .value কাটাও
-                absentCount = dashboardData.absent, // .value কাটাও
-                onStartAttendance = {
-                    navController.navigate(Screen.Attendance.route)
-                }
+                homeViewModel = homeViewModel,
+                onMenuClick = onMenuClick
             )
         }
         composable(

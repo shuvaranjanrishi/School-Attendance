@@ -54,4 +54,23 @@ class AttendanceRepositoryImpl @Inject constructor(
             )
         }
     }
+    override fun getMonthSummary(month: String): Flow<DashboardData> {
+        return combine(
+            attendanceDao.getTotalStudentsCount(),
+            attendanceDao.getMonthPresent(month + "%"), // মাসের সব দিনের ডেটা
+            attendanceDao.getMonthAbsent(month + "%")
+        ) { total, present, absent ->
+            DashboardData(total, present, absent)
+        }
+    }
+
+    override fun getYearSummary(year: String): Flow<DashboardData> {
+        return combine(
+            attendanceDao.getTotalStudentsCount(),
+            attendanceDao.getYearPresent(year + "%"), // বছরের সব দিনের ডেটা
+            attendanceDao.getYearAbsent(year + "%")
+        ) { total, present, absent ->
+            DashboardData(total, present, absent)
+        }
+    }
 }

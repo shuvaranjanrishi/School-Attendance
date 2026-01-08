@@ -13,4 +13,6 @@ interface AttendanceRepository {
     suspend fun saveAttendance(records: List<AttendanceEntity>)
 
     fun getDashboardSummary(date: String): Flow<DashboardData>
+    fun getMonthSummary(month: String): Flow<DashboardData>
+    fun getYearSummary(year: String): Flow<DashboardData>
 }

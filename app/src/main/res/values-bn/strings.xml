@@ -326,4 +326,8 @@
 
     <string name="today_summary">আজকের সারসংক্ষেপ</string>
     <string name="classes_title">শ্রেণীসমূহ</string>
+    <string name="today_attendance">আজকের উপস্থিতি</string>
+    <string name="monthly_attendance">মাসিক উপস্থিতি</string>
+    <string name="yearly_attendance">বার্ষিক উপস্থিতি</string>
+    <string name="attendance_rate">উপস্থিতি হার</string>
 </resources>

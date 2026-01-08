@@ -20,7 +20,7 @@ sealed class Screen(val route: String, val resId: Int, val icon: ImageVector) {
     object Auth : Screen("auth_screen", 0, Icons.Default.Dashboard)
     object Home : Screen("home", R.string.dashboard, Icons.Default.Dashboard)
     object Attendance : Screen(
-        route = "attendance?className={className}", // এখানে ? ব্যবহার করে এটাকে অপশনাল করা হয়েছে
+        route = "attendance?className={className}",
         resId = R.string.take_attendance,
         icon = Icons.Default.CheckCircle
     ) {

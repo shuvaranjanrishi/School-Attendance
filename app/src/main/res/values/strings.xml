@@ -325,4 +325,8 @@
 
     <string name="today_summary">Today\'s Summary</string>
     <string name="classes_title">Classes</string>
+    <string name="today_attendance">Today Attendance</string>
+    <string name="monthly_attendance">Monthly Attendance</string>
+    <string name="yearly_attendance">Yearly Attendance</string>
+    <string name="attendance_rate">Attendance Rate</string>
 </resources>

@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -32,6 +33,7 @@ fun AttendanceMainScreen(
     onClassClick: (String) -> Unit,
     onMenuClick: () -> Unit
 ) {
+    val context = LocalContext.current
     val summaries by viewModel.classSummaries.collectAsState()
     val selectedDate by viewModel.selectedDate.collectAsState()
     var showDatePicker by remember { mutableStateOf(false) }
