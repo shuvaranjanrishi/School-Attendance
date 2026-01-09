@@ -2,6 +2,7 @@ package com.therishideveloper.schoolattendance.data.local.export
 
 import android.content.Context
 import android.os.Environment
+import com.therishideveloper.schoolattendance.data.local.entity.AttendanceEntity
 import com.therishideveloper.schoolattendance.data.local.entity.StudentEntity
 import com.therishideveloper.schoolattendance.utils.Result // আপনার কাস্টম Result ক্লাস
 import com.therishideveloper.schoolattendance.utils.showDownloadNotification
@@ -78,4 +79,67 @@ class ExcelExporter @Inject constructor(
             Result.Error(e.message ?: "Export Error")
         }
     }
+
+    fun exportAttendanceReportToExcel(
+        className: String,
+        monthYear: String,
+        attendanceData: List<AttendanceEntity>
+    ): Result<String> {
+        return try {
+            val workbook = XSSFWorkbook()
+            val sheet = workbook.createSheet("Report-$className")
+
+            // ১. হেডার তৈরি (Student Name এবং ১-৩১ তারিখ)
+            val headerRow = sheet.createRow(0)
+            headerRow.createCell(0).setCellValue("Student Name")
+            for (day in 1..31) {
+                headerRow.createCell(day).setCellValue(day.toString())
+            }
+
+            // ২. ডাটা বসানো
+            val groupedData = attendanceData.groupBy { it.studentName }
+            var rowIndex = 1
+            groupedData.forEach { (name, records) ->
+                val row = sheet.createRow(rowIndex++)
+                row.createCell(0).setCellValue(name)
+
+                for (day in 1..31) {
+                    val dayStr = String.format("%02d", day)
+                    val status = records.find { it.date.startsWith(dayStr) }?.status ?: "-"
+                    val shortStatus = if (status == "Present") "P" else if (status == "Absent") "A" else "-"
+                    row.createCell(day).setCellValue(shortStatus)
+                }
+            }
+
+            // কলাম অটো সাইজ
+            sheet.setColumnWidth(0, 25 * 256)
+
+            // ৩. ফাইল সেভ করা
+            val exportFolder = File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                "School Attendance/Reports"
+            )
+            if (!exportFolder.exists()) exportFolder.mkdirs()
+
+            val fileName = "Attendance_${className}_${monthYear.replace(" ", "_")}.xlsx"
+            val file = File(exportFolder, fileName)
+
+            FileOutputStream(file).use { workbook.write(it) }
+            workbook.close()
+
+            // নোটিফিকেশন
+            showDownloadNotification(
+                context = context,
+                file = file,
+                title = "Excel Report Ready",
+                description = "$className - $monthYear report downloaded.",
+                mimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+
+            Result.Success("Excel Exported Successfully")
+        } catch (e: Exception) {
+            Result.Error(e.message ?: "Excel Export Error")
+        }
+    }
+
 }

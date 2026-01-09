@@ -329,4 +329,11 @@
     <string name="monthly_attendance">Monthly Attendance</string>
     <string name="yearly_attendance">Yearly Attendance</string>
     <string name="attendance_rate">Attendance Rate</string>
+
+    <string name="reports">Reports</string>
+    <string name="monthly_report_title">Monthly Report</string>
+    <string name="total">Total</string>
+    <string name="present">Present</string>
+    <string name="absent">Absent</string>
+    <string name="no_data">No data found</string>
 </resources>

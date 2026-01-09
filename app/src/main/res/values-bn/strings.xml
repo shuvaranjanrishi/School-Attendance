@@ -330,4 +330,11 @@
     <string name="monthly_attendance">মাসিক উপস্থিতি</string>
     <string name="yearly_attendance">বার্ষিক উপস্থিতি</string>
     <string name="attendance_rate">উপস্থিতি হার</string>
+
+    <string name="reports">Reports</string>
+    <string name="monthly_report_title">মাসিক রিপোর্ট</string>
+    <string name="total">মোট</string>
+    <string name="present">উপস্থিত</string>
+    <string name="absent">অনুপস্থিত</string>
+    <string name="no_data">কোনো তথ্য পাওয়া যায়নি</string>
 </resources>

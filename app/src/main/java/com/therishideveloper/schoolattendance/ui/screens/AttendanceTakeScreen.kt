@@ -18,8 +18,6 @@ import com.therishideveloper.schoolattendance.ui.components.showToast
 import com.therishideveloper.schoolattendance.ui.viewmodels.AttendanceViewModel
 import com.therishideveloper.schoolattendance.utils.ClassTypes
 import com.therishideveloper.schoolattendance.utils.DateUtils
-import java.text.SimpleDateFormat
-import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,6 +32,7 @@ fun AttendanceTakeScreen(
     val classType = remember { ClassTypes.fromCode(className) }
     val isToday = remember(selectedDateStr) { selectedDateStr == DateUtils.getTodayDate() }
     val displayDate = remember(selectedDateStr) { DateUtils.getDisplayDate(selectedDateStr) }
+    val msgAttendanceSuccess = stringResource(R.string.msg_attendance_success)
 
     LaunchedEffect(className, selectedDateStr) {
         viewModel.loadStudentsForAttendance(className)
@@ -66,7 +65,7 @@ fun AttendanceTakeScreen(
         bottomBar = {
             AttendanceBottomSummary(attendanceState, isToday) { records ->
                 viewModel.saveAttendance(records) {
-                    showToast(context, context.getString(R.string.msg_attendance_success))
+                    showToast(context, msgAttendanceSuccess)
                     onBack()
                 }
             }

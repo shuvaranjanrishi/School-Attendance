@@ -47,4 +47,15 @@ interface AttendanceDao {
     @Query("SELECT COUNT(*) FROM attendance_records WHERE date LIKE '%' || :yearPattern AND status = 'Absent'")
     fun getYearAbsent(yearPattern: String): Flow<Int>
 
+    @Query("SELECT * FROM attendance_records WHERE date LIKE '%-' || :month || '-' || :year")
+    fun getMonthlyReportData(month: String, year: String): Flow<List<AttendanceEntity>>
+
+    // নির্দিষ্ট মাস, বছর এবং ক্লাসের সব হাজিরা একসাথে পাওয়ার জন্য
+    @Query("""
+            SELECT * FROM attendance_records 
+            WHERE className = :className 
+            AND date LIKE '%-' || :month || '-' || :year
+            ORDER BY studentId ASC, date ASC
+        """)
+    fun getDetailedMonthlyReport(className: String, month: String, year: String): Flow<List<AttendanceEntity>>
 }

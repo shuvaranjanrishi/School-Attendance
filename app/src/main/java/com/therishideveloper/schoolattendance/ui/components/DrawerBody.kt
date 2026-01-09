@@ -19,7 +19,12 @@ fun DrawerBody(
     onItemClick: (Screen) -> Unit,
     onLogoutClick: () -> Unit
 ) {
-    val mainItems = listOf(Screen.Home, Screen.Attendance, Screen.Students)
+    val mainItems = listOf(
+        Screen.Home,
+        Screen.Attendance,
+        Screen.Students,
+        Screen.Reports
+    )
 
     val otherItems = listOf(
         Screen.Settings,

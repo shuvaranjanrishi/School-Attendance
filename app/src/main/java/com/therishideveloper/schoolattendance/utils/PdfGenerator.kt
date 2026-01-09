@@ -18,6 +18,7 @@ import java.io.FileOutputStream
 import java.util.Locale
 import androidx.core.graphics.toColorInt
 import androidx.core.graphics.scale
+import com.therishideveloper.schoolattendance.data.local.entity.AttendanceEntity
 
 @Singleton
 class PdfGenerator @Inject constructor(
@@ -275,9 +276,6 @@ class PdfGenerator @Inject constructor(
         }
     }
 
-    /**
-     * Internal helper to crop logo bitmaps into a circular shape.
-     */
     private fun getCircularBitmap(src: Bitmap): Bitmap {
         val size = minOf(src.width, src.height)
         val output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
@@ -287,5 +285,125 @@ class PdfGenerator @Inject constructor(
         paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
         canvas.drawBitmap(src, Rect(0, 0, size, size), Rect(0, 0, size, size), paint)
         return output
+    }
+
+    suspend fun downloadMonthlyReportPdf(
+        className: String,
+        monthYear: String,
+        attendanceData: List<AttendanceEntity>
+    ): Result<File> {
+        val school = schoolRepository.getSchool()
+        val pdfDocument = PdfDocument()
+
+        // ল্যান্ডস্কেপ মোড (Landscape) হলে ভালো হয় কারণ ৩১ দিনের কলাম অনেক বড়
+        // A4 Landscape: 842 (Width) x 595 (Height)
+        val pageWidth = 842
+        val pageHeight = 595
+        val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 1).create()
+        val page = pdfDocument.startPage(pageInfo)
+        val canvas: Canvas = page.canvas
+        val paint = Paint()
+
+        // --- ১. হেডার সেকশন (আপনার প্রোফাইল কোড থেকে অনুপ্রাণিত) ---
+        school?.logo?.let { bytes ->
+            val originalBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            val circularBitmap = getCircularBitmap(originalBitmap)
+            canvas.drawBitmap(circularBitmap.scale(50, 50, false), 40f, 20f, null)
+            circularBitmap.recycle()
+        }
+
+        paint.textAlign = Paint.Align.CENTER
+        paint.isFakeBoldText = true
+        paint.textSize = 22f
+        canvas.drawText(school?.name ?: "", (pageWidth / 2).toFloat(), 40f, paint)
+
+        paint.textSize = 16f
+        paint.color = Color.DKGRAY
+        val reportTitle = "${getLabel(R.string.reports)}: $className ($monthYear)"
+        canvas.drawText(reportTitle, (pageWidth / 2).toFloat(), 70f, paint)
+
+        // --- ২. টেবিল কনফিগারেশন ---
+        val startX = 30f
+        var startY = 100f
+        val nameWidth = 120f
+        val dayWidth = (pageWidth - startX - nameWidth - 30f) / 31f // ডাইনামিক কলাম উইথ
+        val rowHeight = 22f
+
+        paint.textAlign = Paint.Align.LEFT
+        paint.textSize = 10f
+        paint.color = Color.BLACK
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = 1f
+
+        // টেবিল হেডার ড্র করা
+        canvas.drawRect(startX, startY, pageWidth - 30f, startY + rowHeight, paint)
+        paint.style = Paint.Style.FILL
+        canvas.drawText(getLabel(R.string.pdf_label_name), startX + 5, startY + 15, paint)
+
+        for (day in 1..31) {
+            val xPos = startX + nameWidth + ((day - 1) * dayWidth)
+            canvas.drawText(day.toString(), xPos + 2, startY + 15, paint)
+        }
+
+        // --- ৩. ডাটা রো ড্র করা ---
+        val groupedData = attendanceData.groupBy { it.studentName }
+        var currentY = startY + rowHeight
+
+        paint.isFakeBoldText = false
+
+        groupedData.forEach { (name, records) ->
+            // নতুন পাতা দরকার কি না চেক করার লজিক (ঐচ্ছিক)
+            if (currentY > pageHeight - 60f) return@forEach
+
+            paint.style = Paint.Style.STROKE
+            canvas.drawRect(startX, currentY, pageWidth - 30f, currentY + rowHeight, paint)
+
+            paint.style = Paint.Style.FILL
+            canvas.drawText(name, startX + 5, currentY + 15, paint)
+
+            for (day in 1..31) {
+                val xPos = startX + nameWidth + ((day - 1) * dayWidth)
+                val dayStr = String.format("%02d", day)
+                val record = records.find { it.date.startsWith(dayStr) }
+
+                val (statusText, color) = when (record?.status) {
+                    "Present" -> "P" to "#2E7D32" // সবুজ
+                    "Absent" -> "A" to "#D32F2F"  // লাল
+                    else -> "-" to "#757575"      // ধূসর
+                }
+
+                paint.color = color.toColorInt()
+                canvas.drawText(statusText, xPos + 4, currentY + 15, paint)
+                paint.color = Color.BLACK
+            }
+            currentY += rowHeight
+        }
+
+        pdfDocument.finishPage(page)
+
+        // --- ৪. সেভ এবং নোটিফিকেশন (আপনার প্রোফাইল লজিক ব্যবহার করে) ---
+        val downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        val finalFolder = File(downloadDir, "School Attendance/Reports")
+
+        return try {
+            if (!finalFolder.exists()) finalFolder.mkdirs()
+            val sanitizedFileName = "Report_${className}_${monthYear.replace(" ", "_")}.pdf"
+            val fileToSave = File(finalFolder, sanitizedFileName)
+
+            pdfDocument.writeTo(FileOutputStream(fileToSave))
+
+            showDownloadNotification(
+                context,
+                fileToSave,
+                getLabel(R.string.pdf_download_success),
+                "$className - $monthYear",
+                "application/pdf"
+            )
+            Result.Success(fileToSave)
+        } catch (e: Exception) {
+            Result.Error(e.localizedMessage ?: "PDF Export Failed")
+        } finally {
+            pdfDocument.close()
+        }
     }
 }

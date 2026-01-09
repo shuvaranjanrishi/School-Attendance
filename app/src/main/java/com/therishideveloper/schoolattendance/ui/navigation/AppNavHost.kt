@@ -21,10 +21,11 @@ fun AppNavHost(
 ) {
     val homeViewModel: HomeViewModel = hiltViewModel()
     val attendanceViewModel: AttendanceViewModel = hiltViewModel()
-    val schoolViewModel: SchoolViewModel = hiltViewModel()
     val studentViewModel: StudentViewModel = hiltViewModel()
+    val reportViewModel: ReportViewModel = hiltViewModel()
     val settingsViewModel: SettingsViewModel = hiltViewModel()
     val profileViewModel: ProfileViewModel = hiltViewModel()
+    val schoolViewModel: SchoolViewModel = hiltViewModel()
     val isLoggedIn by settingsViewModel.isLoggedInFlow.collectAsState()
 
     NavHost(
@@ -72,6 +73,39 @@ fun AppNavHost(
                 onStudentClick = { id ->
                     navController.navigate(Screen.StudentDetailScreen.createRoute(id))
                 }
+            )
+        }
+        composable(Screen.Reports.route) { // এখানে Screen.Reports.route হবে
+            ReportScreen(
+                viewModel = reportViewModel,
+                onMenuClick = onMenuClick,
+                onClassClick = { className ->
+                    val month = reportViewModel.selectedMonth.value
+                    val year = reportViewModel.selectedYear.value
+                    navController.navigate(
+                        Screen.DetailsReportScreen.createRoute(className, month, year)
+                    )
+                }
+            )
+        }
+        composable(
+            route = Screen.DetailsReportScreen.route,
+            arguments = listOf(
+                navArgument("className") { type = NavType.StringType },
+                navArgument("month") { type = NavType.StringType },
+                navArgument("year") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val className = backStackEntry.arguments?.getString("className") ?: ""
+            val month = backStackEntry.arguments?.getString("month") ?: ""
+            val year = backStackEntry.arguments?.getString("year") ?: ""
+
+            DetailsReportScreen(
+                viewModel = reportViewModel,
+                className = className,
+                month = month,
+                year = year,
+                onBack = { navController.popBackStack() }
             )
         }
         composable(Screen.Settings.route) {

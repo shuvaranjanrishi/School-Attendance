@@ -4,6 +4,7 @@ import com.therishideveloper.schoolattendance.R
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Info
@@ -27,6 +28,7 @@ sealed class Screen(val route: String, val resId: Int, val icon: ImageVector) {
         fun createRoute(className: String) = "attendance?className=$className"
     }
     object Students : Screen("students", R.string.student_list, Icons.Default.People)
+    object Reports : Screen("reports", R.string.reports, Icons.Default.Assessment)
     object Settings : Screen("settings", R.string.settings, Icons.Default.Settings)
     object UserProfile : Screen("user_profile", R.string.profile, Icons.Default.AccountBox)
     object SchoolProfile : Screen("school_profile", R.string.school_profile_settings, Icons.Default.School)
@@ -37,5 +39,15 @@ sealed class Screen(val route: String, val resId: Int, val icon: ImageVector) {
     object StudentDetailScreen :
         Screen("student_details_screen/{studentId}", 0, Icons.Default.People) {
         fun createRoute(id: Int) = "student_details_screen/$id"
+    }
+    // আপনার Screen ফাইলে এটি যোগ করুন
+    // আপনার Screen ফাইলের ভেতরে এটি এভাবে আপডেট করুন
+    object DetailsReportScreen : Screen(
+        route = "details_report/{className}/{month}/{year}",
+        resId = R.string.reports, // অথবা ০ যদি স্ট্রিং না থাকে
+        icon = Icons.Default.Assessment
+    ) {
+        fun createRoute(className: String, month: String, year: String) =
+            "details_report/$className/$month/$year"
     }
 }

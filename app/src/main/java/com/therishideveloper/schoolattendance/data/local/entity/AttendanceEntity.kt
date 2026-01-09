@@ -10,6 +10,7 @@ data class AttendanceEntity(
     val studentId: Int,
     val studentName: String,
     val rollNo: String,
+    val gender: String,
     val className: String,
     val date: String,
     val status: String

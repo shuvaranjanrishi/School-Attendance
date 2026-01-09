@@ -30,27 +30,17 @@ object DateUtils {
     // ১. আজকের তারিখের স্ট্রিং নেওয়ার সময় Locale.getDefault() দিন
     fun getTodayDate(): String {
         // এখানে Locale.US এর বদলে Locale.getDefault() ব্যবহার করুন
-        return SimpleDateFormat(DB_DATE_FORMAT, Locale.getDefault()).format(Date())
+        return SimpleDateFormat(DB_DATE_FORMAT, Locale.US).format(Date())
     }
 
-    // ২. ডিসপ্লে করার সময়ও Locale.getDefault() নিশ্চিত করুন
     fun getDisplayDate(dateStr: String): String {
         return try {
-            // Locale.US এর বদলে Locale.getDefault() দিন, এটাই ম্যাজিক করবে
-            val date = SimpleDateFormat("dd-MM-yyyy", Locale.US).parse(dateStr) ?: Date()
+            val date = SimpleDateFormat(DB_DATE_FORMAT, Locale.US).parse(dateStr) ?: Date()
             SimpleDateFormat("EEEE, dd MMMM, yyyy", Locale.getDefault()).format(date)
         } catch (e: Exception) {
             dateStr
         }
     }
-//    fun getDisplayDate(dateStr: String): String {
-//        return try {
-//            val date = SimpleDateFormat(DB_DATE_FORMAT, Locale.US).parse(dateStr) ?: Date()
-//            SimpleDateFormat("EEEE, dd MMMM, yyyy", Locale.getDefault()).format(date)
-//        } catch (e: Exception) {
-//            dateStr
-//        }
-//    }
 
     fun dateToMillis(dateStr: String): Long {
         return try {
@@ -63,5 +53,20 @@ object DateUtils {
 
     fun millisToDate(millis: Long): String {
         return SimpleDateFormat(DB_DATE_FORMAT, Locale.US).format(Date(millis))
+    }
+
+    fun getFormattedDate(month: String, year: String): String {
+        return try {
+            // মাস এবং বছরকে একটি ডেট ফরম্যাটে নিয়ে আসা (যেমন: "01-2026")
+            val sdfInput = SimpleDateFormat("MM-yyyy", Locale.US)
+            val date = sdfInput.parse("$month-$year")
+
+            // এবার সেটাকে সুন্দর করে "January 2026" বা "জানুয়ারি ২০২৬" এ রূপান্তর করা
+            // Locale.getDefault() দিলে ইউজারের ভাষা অনুযায়ী মাস আসবে
+            val sdfOutput = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
+            date?.let { sdfOutput.format(it) } ?: "$month/$year"
+        } catch (e: Exception) {
+            "$month/$year" // এরর হলে ব্যাকআপ হিসেবে সংখ্যাই দেখাবে
+        }
     }
 }
