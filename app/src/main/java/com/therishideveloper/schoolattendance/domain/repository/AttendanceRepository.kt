@@ -12,12 +12,13 @@ interface AttendanceRepository {
     fun getAttendanceRecords(className: String, date: String): Flow<List<AttendanceEntity>>
 
     suspend fun saveAttendance(records: List<AttendanceEntity>)
+    suspend fun updateStudentNameInAttendance(id: Int, name: String)
 
     fun getDashboardSummary(date: String): Flow<DashboardData>
     fun getMonthSummary(month: String): Flow<DashboardData>
     fun getYearSummary(year: String): Flow<DashboardData>
 
-    // AttendanceRepository.kt
     fun getMonthlyReport(month: String, year: String): Flow<List<MonthlyReportModel>>
     fun getDetailedReport(className: String, month: String, year: String): Flow<List<AttendanceEntity>>
+    fun getAllDetailedReportByMonth(month: String, year: String): Flow<List<AttendanceEntity>>
 }

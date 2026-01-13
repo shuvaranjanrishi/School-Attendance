@@ -75,21 +75,41 @@ fun AppNavHost(
                 }
             )
         }
-        composable(Screen.Reports.route) { // এখানে Screen.Reports.route হবে
-            ReportScreen(
-                viewModel = reportViewModel,
+        composable(Screen.ReportTypeSelectionScreen.route) {
+            ReportTypeSelectionScreen(
                 onMenuClick = onMenuClick,
+                onClassWiseClick = {
+                    navController.navigate(Screen.ReportsSummeryClassWiseScreen.route)
+                },
+                onStudentWiseClick = {
+                    navController.navigate(Screen.ReportsSummaryStudentWiseScreen.route)
+                }
+            )
+        }
+        composable(Screen.ReportsSummeryClassWiseScreen.route) {
+            ReportSummeryClassWiseScreen(
+                onMenuClick = onMenuClick,
+                viewModel = reportViewModel,
                 onClassClick = { className ->
                     val month = reportViewModel.selectedMonth.value
                     val year = reportViewModel.selectedYear.value
                     navController.navigate(
-                        Screen.DetailsReportScreen.createRoute(className, month, year)
+                        Screen.ClassWiseDetailsReportScreen.createRoute(className, month, year)
                     )
                 }
             )
         }
+        composable(Screen.ReportsSummaryStudentWiseScreen.route) {
+            ReportSummaryStudentWiseScreen(
+                viewModel = reportViewModel,
+                onMenuClick = { navController.popBackStack() }, // ব্যাক বাটন হিসেবে
+                onStudentClick = { id ->
+                    navController.navigate(Screen.MonthlyReportDetailsCalendar.createRoute(id))
+                }
+            )
+        }
         composable(
-            route = Screen.DetailsReportScreen.route,
+            route = Screen.ClassWiseDetailsReportScreen.route,
             arguments = listOf(
                 navArgument("className") { type = NavType.StringType },
                 navArgument("month") { type = NavType.StringType },
@@ -100,12 +120,12 @@ fun AppNavHost(
             val month = backStackEntry.arguments?.getString("month") ?: ""
             val year = backStackEntry.arguments?.getString("year") ?: ""
 
-            DetailsReportScreen(
+            ClassWiseDetailsReportScreen(
+                onBack = { navController.popBackStack() },
                 viewModel = reportViewModel,
                 className = className,
                 month = month,
-                year = year,
-                onBack = { navController.popBackStack() }
+                year = year
             )
         }
         composable(Screen.Settings.route) {
@@ -160,7 +180,18 @@ fun AppNavHost(
                 viewModel = studentViewModel
             )
         }
+        composable(
+            route = Screen.MonthlyReportDetailsCalendar.route,
+            arguments = listOf(navArgument("studentId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val studentId = backStackEntry.arguments?.getInt("studentId") ?: 0
 
+            ReportStudentWiseDetailsScreen(
+                studentId = studentId,
+                viewModel = reportViewModel, // ভিউমডেল পাস করে দিন
+                onBack = { navController.popBackStack() }
+            )
+        }
         composable(Screen.About.route) {
             AboutScreen()
         }

@@ -1,10 +1,13 @@
 package com.therishideveloper.schoolattendance.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.*
 import android.graphics.pdf.PdfDocument
+import android.net.Uri
 import android.os.Environment
+import android.provider.SyncStateContract
 import com.therishideveloper.schoolattendance.R
 import com.therishideveloper.schoolattendance.data.local.SettingsManager
 import com.therishideveloper.schoolattendance.data.local.entity.StudentEntity
@@ -19,6 +22,10 @@ import java.util.Locale
 import androidx.core.graphics.toColorInt
 import androidx.core.graphics.scale
 import com.therishideveloper.schoolattendance.data.local.entity.AttendanceEntity
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import com.therishideveloper.schoolattendance.utils.Constants
 
 @Singleton
 class PdfGenerator @Inject constructor(
@@ -39,8 +46,8 @@ class PdfGenerator @Inject constructor(
         val pdfDocument = PdfDocument()
 
         // PDF Page Configuration (A4 Size: 595x842)
-        val pageWidth = 595
-        val pageHeight = 842
+        val pageWidth = Constants.A4_WIDTH
+        val pageHeight = Constants.A4_HEIGHT
         val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 1).create()
         val page = pdfDocument.startPage(pageInfo)
         val canvas: Canvas = page.canvas
@@ -252,7 +259,7 @@ class PdfGenerator @Inject constructor(
         // --- 6. Storage & Saving ---
         val downloadDir =
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-        val finalFolder = File(downloadDir, "School Attendance/Profiles")
+        val finalFolder = File(downloadDir, Constants.FOLDER_PROFILES)
 
         return try {
             if (!finalFolder.exists()) finalFolder.mkdirs()
@@ -297,8 +304,8 @@ class PdfGenerator @Inject constructor(
 
         // ল্যান্ডস্কেপ মোড (Landscape) হলে ভালো হয় কারণ ৩১ দিনের কলাম অনেক বড়
         // A4 Landscape: 842 (Width) x 595 (Height)
-        val pageWidth = 842
-        val pageHeight = 595
+        val pageWidth = Constants.A4_WIDTH
+        val pageHeight = Constants.A4_HEIGHT
         val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 1).create()
         val page = pdfDocument.startPage(pageInfo)
         val canvas: Canvas = page.canvas
@@ -382,8 +389,9 @@ class PdfGenerator @Inject constructor(
         pdfDocument.finishPage(page)
 
         // --- ৪. সেভ এবং নোটিফিকেশন (আপনার প্রোফাইল লজিক ব্যবহার করে) ---
-        val downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-        val finalFolder = File(downloadDir, "School Attendance/Reports")
+        val downloadDir =
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        val finalFolder = File(downloadDir, Constants.FOLDER_REPORTS)
 
         return try {
             if (!finalFolder.exists()) finalFolder.mkdirs()
@@ -406,4 +414,470 @@ class PdfGenerator @Inject constructor(
             pdfDocument.close()
         }
     }
+
+    suspend fun createStudentMonthlyDetailsReport(
+        studentName: String,
+        className: String,
+        monthYear: String,
+        rollNo: String,
+        total: Int,
+        present: Int,
+        absent: Int,
+        percent: Float,
+        records: List<AttendanceEntity>,
+        isSharing: Boolean = false
+    ): Result<File> {
+        val school = schoolRepository.getSchool()
+        val pdfDocument = PdfDocument()
+
+        // A4 Size (Portrait): 595 x 842
+        val pageWidth = Constants.A4_WIDTH
+        val pageHeight = Constants.A4_HEIGHT
+        val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 1).create()
+        val page = pdfDocument.startPage(pageInfo)
+        val canvas: Canvas = page.canvas
+        val paint = Paint()
+
+        // --- ১. হেডার সেকশন ---
+        val schoolName = school?.name ?: getLabel(R.string.pdf_hint_school_name)
+        paint.textAlign = Paint.Align.CENTER
+        paint.isFakeBoldText = true
+        paint.textSize = if (paint.measureText(schoolName) > 280f) 22f else 28f
+        paint.color = Color.BLACK
+        canvas.drawText(schoolName, (pageWidth / 2).toFloat(), 55f, paint)
+
+        paint.textSize = 14f
+        paint.isFakeBoldText = false
+        paint.color = Color.GRAY
+        val schoolAddress = school?.address ?: getLabel(R.string.pdf_hint_school_address)
+        canvas.drawText(schoolAddress, (pageWidth / 2).toFloat(), 80f, paint)
+
+        paint.textSize = 20f
+        paint.isFakeBoldText = true
+        paint.color = Color.DKGRAY
+        val title = "${getLabel(R.string.monthly_attendance_report)}: $monthYear"
+        canvas.drawText(title, (pageWidth / 2).toFloat(), 115f, paint)
+
+        paint.color = Color.LTGRAY
+        canvas.drawLine(40f, 135f, (pageWidth - 40).toFloat(), 135f, paint)
+
+        // --- ২. স্ট্যাটাস কার্ড (বাম পাশে প্রোফাইল, ডান পাশে প্রোগ্রেস ও স্ট্যাটাস) ---
+        val cardTop = 160f
+        val cardBottom = 260f
+        paint.color = Color.rgb(245, 245, 245)
+        canvas.drawRoundRect(40f, cardTop, (pageWidth - 40).toFloat(), cardBottom, 15f, 15f, paint)
+
+        // কার্ডের মাঝখানের ডিভাইডার
+        paint.color = Color.LTGRAY
+        paint.strokeWidth = 1f
+        canvas.drawLine((pageWidth / 2).toFloat(), cardTop + 20f, (pageWidth / 2).toFloat(), cardBottom - 20f, paint)
+
+        // --- বাম পাশ: স্টুডেন্ট ইনফো ---
+        paint.textAlign = Paint.Align.LEFT
+        paint.isFakeBoldText = true
+        paint.textSize = 18f
+        paint.color = "#1565C0".toColorInt()
+        canvas.drawText(studentName, 65f, cardTop + 35f, paint)
+
+        paint.textSize = 13f
+        paint.isFakeBoldText = false
+        paint.color = Color.DKGRAY
+        canvas.drawText("শ্রেণী: $className", 65f, cardTop + 60f, paint)
+        canvas.drawText("রোল: $rollNo", 65f, cardTop + 80f, paint)
+
+        // --- ডান পাশ: পরিসংখ্যান (সরাসরি প্যারামিটার থেকে প্রাপ্ত) ---
+        val rightInfoStart = (pageWidth / 2).toFloat() + 25f
+        paint.textAlign = Paint.Align.LEFT
+        paint.textSize = 12f
+        paint.color = Color.BLACK
+        canvas.drawText("মোট দিন: $total", rightInfoStart, cardTop + 35f, paint)
+        paint.color = "#2E7D32".toColorInt()
+        canvas.drawText("উপস্থিত: $present", rightInfoStart, cardTop + 55f, paint)
+        paint.color = "#D32F2F".toColorInt()
+        canvas.drawText("অনুপস্থিত: $absent", rightInfoStart, cardTop + 75f, paint)
+
+        // রাইট মোস্ট প্রোগ্রেস সার্কেল
+        val centerX = (pageWidth - 100).toFloat()
+        val centerY = (cardTop + cardBottom) / 2
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = 6f
+        paint.color = Color.LTGRAY
+        canvas.drawCircle(centerX, centerY, 30f, paint)
+
+        paint.color = if (percent >= 80) "#2E7D32".toColorInt() else "#FBC02D".toColorInt()
+        val rectF = RectF(centerX - 30f, centerY - 30f, centerX + 30f, centerY + 30f)
+        canvas.drawArc(rectF, -90f, (percent * 3.6).toFloat(), false, paint)
+
+        paint.style = Paint.Style.FILL
+        paint.textSize = 12f
+        paint.textAlign = Paint.Align.CENTER
+        canvas.drawText("${percent.toInt()}%", centerX, centerY + 5f, paint)
+
+        // --- ৪. লিজেন্ড (Legend) ---
+        val legendY = 300f
+        paint.textAlign = Paint.Align.LEFT
+        paint.color = "#2E7D32".toColorInt()
+        canvas.drawCircle(60f, legendY - 5f, 5f, paint)
+        paint.color = Color.GRAY
+        canvas.drawText("Present", 75f, legendY, paint)
+
+        paint.color = "#D32F2F".toColorInt()
+        canvas.drawCircle(160f, legendY - 5f, 5f, paint)
+        paint.color = Color.GRAY
+        canvas.drawText("Absent", 175f, legendY, paint)
+
+        paint.color = Color.LTGRAY
+        canvas.drawCircle(260f, legendY - 5f, 5f, paint)
+        paint.color = Color.GRAY
+        canvas.drawText("No Class", 275f, legendY, paint)
+
+        // --- ৫. ক্যালেন্ডার গ্রিড ---
+        val startX = 65f
+        val startY = 380f
+        val cellSize = 70f
+
+        paint.color = Color.DKGRAY
+        paint.textSize = 15f
+        paint.textAlign = Paint.Align.CENTER
+        paint.isFakeBoldText = true
+
+        listOf("S", "M", "T", "W", "T", "F", "S").forEachIndexed { index, day ->
+            canvas.drawText(day, startX + (index * cellSize) + 30f, startY - 35f, paint)
+        }
+
+        val calendar = Calendar.getInstance()
+        // নির্বাচিত মাস ও বছর অনুযায়ী দিন বের করা
+        val maxDays = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+
+        var currentX = startX
+        var currentY = startY
+        paint.isFakeBoldText = false
+
+        for (day in 1..maxDays) {
+            val dayStr = String.format("%02d", day)
+            val record = records.find { it.date.startsWith(dayStr) }
+
+            paint.color = when (record?.status) {
+                "Present" -> "#2E7D32".toColorInt()
+                "Absent" -> "#D32F2F".toColorInt()
+                else -> "#EEEEEE".toColorInt()
+            }
+            canvas.drawCircle(currentX + 30f, currentY + 10f, 25f, paint)
+
+            paint.color = if (record != null) Color.WHITE else Color.BLACK
+            canvas.drawText(day.toString(), currentX + 30f, currentY + 16f, paint)
+
+            if (day % 7 == 0) {
+                currentX = startX
+                currentY += cellSize
+            } else {
+                currentX += cellSize
+            }
+        }
+
+        // --- ৬. ফুটার ---
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = 0.5f
+        paint.color = Color.LTGRAY
+        canvas.drawLine(40f, 780f, (pageWidth - 40).toFloat(), 780f, paint)
+
+        paint.style = Paint.Style.FILL
+        paint.textSize = 11f
+        paint.color = Color.GRAY
+        paint.textAlign = Paint.Align.LEFT
+        val genDate = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(Date())
+        canvas.drawText("Generated on: $genDate", 40f, 805f, paint)
+
+        paint.isFakeBoldText = true
+        paint.color = "#1976D2".toColorInt()
+        paint.textAlign = Paint.Align.RIGHT
+        canvas.drawText("Developed by: The Rishi Developer", (pageWidth - 40).toFloat(), 805f, paint)
+
+        pdfDocument.finishPage(page)
+
+        // --- ৭. সেভ লজিক (Cache/Downloads) ---
+        val finalFolder = if (isSharing) {
+            File(context.cacheDir, "shared_reports")
+        } else {
+            File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), Constants.FOLDER_REPORTS)
+        }
+
+        return try {
+            if (!finalFolder.exists()) finalFolder.mkdirs()
+            val fileName = "Report_${studentName.replace(" ", "_")}_${monthYear.replace(" ", "_")}.pdf"
+            val fileToSave = File(finalFolder, fileName)
+
+            pdfDocument.writeTo(FileOutputStream(fileToSave))
+
+            if (!isSharing) {
+                showDownloadNotification(context, fileToSave, "রিপোর্ট ডাউনলোড সফল হয়েছে", "$studentName - $monthYear", "application/pdf")
+            }
+
+            Result.Success(fileToSave)
+        } catch (e: Exception) {
+            Result.Error(e.localizedMessage ?: "Failed to save PDF")
+        } finally {
+            pdfDocument.close()
+        }
+    }
+
+//    suspend fun createStudentMonthlyDetailsReport(
+//        studentName: String,
+//        className: String,
+//        monthYear: String,
+//        records: List<AttendanceEntity>,
+//        isSharing: Boolean = false
+//    ): Result<File> {
+//        val school = schoolRepository.getSchool()
+//        val pdfDocument = PdfDocument()
+//
+//        val pageWidth = Constants.A4_WIDTH
+//        val pageHeight = Constants.A4_HEIGHT
+//        val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 1).create()
+//        val page = pdfDocument.startPage(pageInfo)
+//        val canvas: Canvas = page.canvas
+//        val paint = Paint()
+//
+//        // --- ১. ডাইনামিক হেডার সেকশন (আপনার ডিজাইন অনুযায়ী) ---
+//        // School Name with auto-font-size adjustment
+//        val schoolName = school?.name ?: getLabel(R.string.pdf_hint_school_name)
+//        paint.textAlign = Paint.Align.CENTER
+//        paint.isFakeBoldText = true
+//        paint.textSize = if (paint.measureText(schoolName) > 280f) 22f else 28f
+//        paint.color = Color.BLACK
+//        canvas.drawText(schoolName, (pageWidth / 2).toFloat(), 55f, paint)
+//
+//        // School Address
+//        paint.textSize = 14f
+//        paint.isFakeBoldText = false
+//        paint.color = Color.GRAY
+//        val schoolAddress = school?.address ?: getLabel(R.string.pdf_hint_school_address)
+//        canvas.drawText(schoolAddress, (pageWidth / 2).toFloat(), 80f, paint)
+//
+//        // Profile Title (এখানে আমরা "মাসিক হাজিরা রিপোর্ট" দেখাচ্ছি)
+//        paint.textSize = 20f
+//        paint.isFakeBoldText = true
+//        paint.color = Color.DKGRAY
+//        val title = "${getLabel(R.string.monthly_attendance_report)}: $monthYear"
+//        canvas.drawText(title, (pageWidth / 2).toFloat(), 115f, paint)
+//
+//        // ডিভাইডার
+//        paint.color = Color.LTGRAY
+//        canvas.drawLine(40f, 135f, (pageWidth - 40).toFloat(), 135f, paint)
+//
+//        // --- ২. স্টুডেন্ট ইনফো ---
+//        paint.textAlign = Paint.Align.CENTER
+//        paint.textSize = 20f
+//        paint.color = "#1565C0".toColorInt()
+//        canvas.drawText(studentName, (pageWidth / 2).toFloat(), 175f, paint)
+//
+//        paint.textSize = 14f
+//        paint.color = Color.GRAY
+//        canvas.drawText(
+//            "রোল: ${records.firstOrNull()?.rollNo ?: "N/A"}  •  ক্লাস: $className",
+//            (pageWidth / 2).toFloat(),
+//            200f,
+//            paint
+//        )
+//
+//        // --- ৩. স্ট্যাটাস কার্ড (Left এ Stats, Right এ Progress) ---
+//        val cardTop = 230f
+//        val cardBottom = 310f
+//        paint.color = Color.rgb(245, 245, 245)
+//        canvas.drawRoundRect(40f, cardTop, (pageWidth - 40).toFloat(), cardBottom, 15f, 15f, paint)
+//
+//        val total = records.size
+//        val present = records.count { it.status == "Present" }
+//        val absent = total - present
+//        val percent = if (total > 0) (present.toFloat() / total.toFloat()) * 100f else 0f
+//
+//        paint.textAlign = Paint.Align.LEFT
+//        paint.color = Color.BLACK
+//        paint.textSize = 14f
+//        canvas.drawText("মোট দিন: $total", 70f, cardTop + 30f, paint)
+//        paint.color = "#2E7D32".toColorInt()
+//        canvas.drawText("উপস্থিত: $present", 70f, cardTop + 50f, paint)
+//        paint.color = "#D32F2F".toColorInt()
+//        canvas.drawText("অনুপস্থিত: $absent", 70f, cardTop + 70f, paint)
+//
+//        paint.color = Color.LTGRAY
+//        canvas.drawLine(
+//            (pageWidth / 2).toFloat() + 20f,
+//            cardTop + 20f,
+//            (pageWidth / 2).toFloat() + 20f,
+//            cardBottom - 20f,
+//            paint
+//        )
+//
+//        val centerX = (pageWidth * 0.75).toFloat()
+//        val centerY = (cardTop + cardBottom) / 2
+//        paint.style = Paint.Style.STROKE
+//        paint.strokeWidth = 8f
+//        paint.color = Color.LTGRAY
+//        canvas.drawCircle(centerX, centerY, 30f, paint)
+//
+//        paint.color = if (percent >= 80) "#2E7D32".toColorInt() else "#FBC02D".toColorInt()
+//        val rectF = RectF(centerX - 30f, centerY - 30f, centerX + 30f, centerY + 30f)
+//        canvas.drawArc(rectF, -90f, (percent * 3.6).toFloat(), false, paint)
+//
+//        paint.style = Paint.Style.FILL
+//        paint.textSize = 14f
+//        paint.textAlign = Paint.Align.CENTER
+//        canvas.drawText("${percent.toInt()}%", centerX, centerY + 5f, paint)
+//
+//        // --- ৪. লিজেন্ড ---
+//        val legendY = 345f
+//        paint.textAlign = Paint.Align.LEFT
+//        paint.color = "#2E7D32".toColorInt()
+//        canvas.drawCircle(60f, legendY - 5f, 5f, paint)
+//        paint.color = Color.GRAY
+//        canvas.drawText("Present", 75f, legendY, paint)
+//        paint.color = "#D32F2F".toColorInt()
+//        canvas.drawCircle(160f, legendY - 5f, 5f, paint)
+//        paint.color = Color.GRAY
+//        canvas.drawText("Absent", 175f, legendY, paint)
+//        paint.color = Color.LTGRAY
+//        canvas.drawCircle(260f, legendY - 5f, 5f, paint)
+//        paint.color = Color.GRAY
+//        canvas.drawText("No Class", 275f, legendY, paint)
+//
+//        // --- ৫. ক্যালেন্ডার গ্রিড ---
+//        val startX = 65f
+//        val startY = 420f
+//        val cellSize = 70f
+//
+//        paint.color = Color.DKGRAY
+//        paint.textSize = 15f
+//        paint.textAlign = Paint.Align.CENTER
+//        paint.isFakeBoldText = true
+//
+//        listOf("S", "M", "T", "W", "T", "F", "S").forEachIndexed { index, day ->
+//            canvas.drawText(day, startX + (index * cellSize) + 30f, startY - 35f, paint)
+//        }
+//
+//        val calendar = Calendar.getInstance()
+//        val maxDays = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+//        var currentX = startX
+//        var currentY = startY
+//
+//        paint.isFakeBoldText = false
+//
+//        for (day in 1..maxDays) {
+//            val dayStr = String.format("%02d", day)
+//            val record = records.find { it.date.startsWith(dayStr) }
+//
+//            paint.color = when (record?.status) {
+//                "Present" -> "#2E7D32".toColorInt()
+//                "Absent" -> "#D32F2F".toColorInt()
+//                else -> "#EEEEEE".toColorInt()
+//            }
+//            canvas.drawCircle(currentX + 30f, currentY + 10f, 25f, paint)
+//
+//            paint.color = if (record != null) Color.WHITE else Color.BLACK
+//            canvas.drawText(day.toString(), currentX + 30f, currentY + 16f, paint)
+//
+//            if (day % 7 == 0) {
+//                currentX = startX
+//                currentY += cellSize
+//            } else {
+//                currentX += cellSize
+//            }
+//        }
+//
+//        // --- ৬. ফুটার ---
+//        paint.style = Paint.Style.STROKE
+//        paint.strokeWidth = 0.5f
+//        paint.color = Color.LTGRAY
+//        canvas.drawLine(40f, 780f, (pageWidth - 40).toFloat(), 780f, paint)
+//
+//        paint.style = Paint.Style.FILL
+//        paint.textSize = 11f
+//        paint.color = Color.GRAY
+//        paint.textAlign = Paint.Align.LEFT
+//        canvas.drawText(
+//            "Generated on: ${
+//                SimpleDateFormat(
+//                    "dd MMM yyyy",
+//                    Locale.getDefault()
+//                ).format(Date())
+//            }", 40f, 805f, paint
+//        )
+//
+//        paint.isFakeBoldText = true
+//        paint.color = "#1976D2".toColorInt()
+//        paint.textAlign = Paint.Align.RIGHT
+//        canvas.drawText(
+//            "Developed by: The Rishi Developer",
+//            (pageWidth - 40).toFloat(),
+//            805f,
+//            paint
+//        )
+//
+//        pdfDocument.finishPage(page)
+//
+//        // --- ৭. সেভ লজিক ---
+//        val downloadDir =
+//            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+//        val finalFolder = if (isSharing) {
+//            File(context.cacheDir, "shared_reports")
+//        } else {
+//            File(
+//                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+//                Constants.FOLDER_REPORTS
+//            )
+//        }
+//        return try {
+//            if (!finalFolder.exists()) finalFolder.mkdirs()
+//            val fileName =
+//                "Report_${studentName.replace(" ", "_")}_${monthYear.replace(" ", "_")}.pdf"
+//            val fileToSave = File(finalFolder, fileName)
+//            pdfDocument.writeTo(FileOutputStream(fileToSave))
+//
+//            if (!isSharing) {
+//                showDownloadNotification(
+//                    context,
+//                    fileToSave,
+//                    "রিপোর্ট ডাউনলোড সফল হয়েছে",
+//                    "$studentName - $monthYear",
+//                    "application/pdf"
+//                )
+//            }
+//            Result.Success(fileToSave)
+//        } catch (e: Exception) {
+//            Result.Error(e.localizedMessage ?: "Failed to save PDF")
+//        } finally {
+//            pdfDocument.close()
+//        }
+//    }
+
+    fun shareFile(file: File) {
+        try {
+            // ম্যানিফেস্টের ${applicationId}.provider অনুযায়ী
+            val authority = "${context.packageName}.provider"
+
+            val uri: Uri = androidx.core.content.FileProvider.getUriForFile(
+                context,
+                authority,
+                file
+            )
+
+            val shareIntent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                type = "application/pdf"
+                putExtra(android.content.Intent.EXTRA_STREAM, uri)
+                addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+
+            // ইনটেন্ট চুজারে টাইটেল দেওয়া
+            val chooserIntent = android.content.Intent.createChooser(shareIntent, "Share Report via")
+
+            // এটি অত্যন্ত গুরুত্বপূর্ণ যদি কনটেক্সট অ্যাক্টিভিটি না হয়
+            chooserIntent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+
+            context.startActivity(chooserIntent)
+        } catch (e: Exception) {
+            // লগ চেক করার জন্য
+            android.util.Log.e("PdfError", "Share failed: ${e.message}")
+        }
+    }
+
 }

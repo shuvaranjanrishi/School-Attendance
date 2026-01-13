@@ -11,10 +11,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.AlertDialog
@@ -43,6 +45,7 @@ import com.therishideveloper.schoolattendance.R
 import com.therishideveloper.schoolattendance.data.local.entity.AttendanceEntity
 import com.therishideveloper.schoolattendance.data.local.model.MonthlyReportModel
 import com.therishideveloper.schoolattendance.utils.ClassTypes
+import java.util.Calendar
 import kotlin.collections.find
 
 
@@ -313,4 +316,71 @@ fun ReportDownloadDialog(
             TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel_btn)) }
         }
     )
+}
+
+
+@Composable
+fun AttendanceCalendarGrid(records: List<AttendanceEntity>) {
+    val calendar = Calendar.getInstance()
+    val maxDays = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+
+    Column {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+            listOf("S", "M", "T", "W", "T", "F", "S").forEach { day ->
+                Text(text = day, fontWeight = FontWeight.Bold, color = Color.Gray)
+            }
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+
+        val chunks = (1..maxDays).chunked(7)
+        chunks.forEach { week ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                week.forEach { day ->
+                    val formattedDay = String.format("%02d", day)
+                    val record = records.find { it.date.startsWith(formattedDay) }
+                    DayCircle(day = day, status = record?.status)
+                }
+                if (week.size < 7) {
+                    repeat(7 - week.size) { Spacer(modifier = Modifier.size(40.dp)) }
+                }
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+    }
+}
+
+@Composable
+fun DayCircle(day: Int, status: String?) {
+    val bgColor = when (status) {
+        "Present" -> Color(0xFF2E7D32)
+        "Absent" -> Color(0xFFD32F2F)
+        else -> Color.LightGray.copy(0.4f)
+    }
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .size(40.dp)
+            .background(color = bgColor, shape = CircleShape)
+    ) {
+        Text(
+            text = day.toString(),
+            color = if (status != null) Color.White else Color.Black,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+fun LegendItem(label: String, color: Color) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(modifier = Modifier
+            .size(10.dp)
+            .background(color, CircleShape))
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(text = label, fontSize = 12.sp, color = Color.Gray)
+    }
 }

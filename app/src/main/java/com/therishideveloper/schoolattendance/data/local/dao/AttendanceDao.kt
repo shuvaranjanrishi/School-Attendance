@@ -11,10 +11,14 @@ interface AttendanceDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAttendanceList(list: List<AttendanceEntity>)
 
+    @Query("UPDATE attendance_records SET studentName = :newName WHERE studentId = :id")
+    suspend fun updateStudentNameInAttendance(id: Int, newName: String)
+
     @Query("SELECT * FROM attendance_records WHERE className = :className AND date = :date ORDER BY CAST(rollNo AS INTEGER) ASC")
     fun getAttendanceByClassAndDate(className: String, date: String): Flow<List<AttendanceEntity>>
 
-    @Query("""
+    @Query(
+        """
         SELECT 
             :className as className,
             (SELECT COUNT(*) FROM students WHERE className = :className) as totalStudents,
@@ -23,7 +27,8 @@ interface AttendanceDao {
             (COUNT(CASE WHEN status = 'Present' OR status = 'Absent' THEN 1 END) > 0) as isTaken
         FROM attendance_records 
         WHERE className = :className AND date = :date
-        """)
+        """
+    )
     fun getClassSummary(className: String, date: String): Flow<ClassSummary>
 
     @Query("SELECT COUNT(*) FROM students")
@@ -47,15 +52,6 @@ interface AttendanceDao {
     @Query("SELECT COUNT(*) FROM attendance_records WHERE date LIKE '%' || :yearPattern AND status = 'Absent'")
     fun getYearAbsent(yearPattern: String): Flow<Int>
 
-    @Query("SELECT * FROM attendance_records WHERE date LIKE '%-' || :month || '-' || :year")
-    fun getMonthlyReportData(month: String, year: String): Flow<List<AttendanceEntity>>
-
-    // নির্দিষ্ট মাস, বছর এবং ক্লাসের সব হাজিরা একসাথে পাওয়ার জন্য
-    @Query("""
-            SELECT * FROM attendance_records 
-            WHERE className = :className 
-            AND date LIKE '%-' || :month || '-' || :year
-            ORDER BY studentId ASC, date ASC
-        """)
-    fun getDetailedMonthlyReport(className: String, month: String, year: String): Flow<List<AttendanceEntity>>
+    @Query("SELECT * FROM attendance_records WHERE date LIKE '%' || '-' || :month || '-' || :year")
+    fun getMonthlyAttendanceData(month: String, year: String): Flow<List<AttendanceEntity>>
 }

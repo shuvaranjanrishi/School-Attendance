@@ -17,7 +17,7 @@ import com.therishideveloper.schoolattendance.utils.DateUtils.getFormattedDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReportScreen(
+fun ReportSummeryClassWiseScreen(
     viewModel: ReportViewModel,
     onMenuClick: () -> Unit,
     onClassClick: (String) -> Unit

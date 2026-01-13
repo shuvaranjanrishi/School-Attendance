@@ -21,7 +21,10 @@ class AttendanceRepositoryImpl @Inject constructor(
         return attendanceDao.getClassSummary(className, date)
     }
 
-    override fun getAttendanceRecords(className: String, date: String): Flow<List<AttendanceEntity>> {
+    override fun getAttendanceRecords(
+        className: String,
+        date: String
+    ): Flow<List<AttendanceEntity>> {
         return attendanceDao.getAttendanceByClassAndDate(className, date).map { records ->
             records.ifEmpty {
                 val students = studentDao.getStudentsByClass(className)
@@ -43,6 +46,9 @@ class AttendanceRepositoryImpl @Inject constructor(
     override suspend fun saveAttendance(records: List<AttendanceEntity>) {
         attendanceDao.insertAttendanceList(records)
     }
+    override suspend fun updateStudentNameInAttendance(id:Int,name: String) {
+        attendanceDao.updateStudentNameInAttendance( id,name)
+    }
 
     override fun getDashboardSummary(date: String): Flow<DashboardData> {
         return combine(
@@ -57,6 +63,7 @@ class AttendanceRepositoryImpl @Inject constructor(
             )
         }
     }
+
     override fun getMonthSummary(month: String): Flow<DashboardData> {
         return combine(
             attendanceDao.getTotalStudentsCount(),
@@ -78,51 +85,71 @@ class AttendanceRepositoryImpl @Inject constructor(
     }
 
     override fun getMonthlyReport(month: String, year: String): Flow<List<MonthlyReportModel>> {
-        return attendanceDao.getMonthlyReportData(month, year).map { entities ->
+        // এখানে DAO এর সেই একটি কমন ফাংশন কল করছি
+        return attendanceDao.getMonthlyAttendanceData(month, year).map { entities ->
             entities.groupBy { it.className }.map { (className, records) ->
-
-                // ১. গ্র্যান্ড টোটাল ক্যালকুলেশন
-                val total = records.size
-                val present = records.count { it.status == "Present" }
-                val absent = total - present
-
-                // ২. ছেলেদের জন্য ক্যালকুলেশন (GenderTypes.MALE.code অর্থাৎ "MALE" এর সাথে ম্যাচ করানো)
-                val bTotal = records.count { it.gender == GenderTypes.MALE.code }
-                val bPresent = records.count { it.gender == GenderTypes.MALE.code && it.status == "Present" }
-                val bAbsent = bTotal - bPresent
-
-                // ৩. মেয়েদের জন্য ক্যালকুলেশন (GenderTypes.FEMALE.code অর্থাৎ "FEMALE" এর সাথে ম্যাচ করানো)
-                val gTotal = records.count { it.gender == GenderTypes.FEMALE.code }
-                val gPresent = records.count { it.gender == GenderTypes.FEMALE.code && it.status == "Present" }
-                val gAbsent = gTotal - gPresent
-
-                // ৪. উপস্থিতির হার
-                val rate = if (total > 0) (present.toFloat() / total * 100f) else 0f
-
-                MonthlyReportModel(
-                    className = className,
-                    totalAttendance = total,
-                    presentCount = present,
-                    absentCount = absent,
-                    boysTotal = bTotal,
-                    boysPresent = bPresent,
-                    boysAbsent = bAbsent,
-                    girlsTotal = gTotal,
-                    girlsPresent = gPresent,
-                    girlsAbsent = gAbsent,
-                    percentage = rate
-                )
+                // ... আপনার আগের ক্যালকুলেশন লজিক (total, present, absent ইত্যাদি) ...
+                // এটি গ্রাফ বা ক্লাস সামারি স্ক্রিনে দেখাবে
+                calculateMonthlyReportModel(
+                    className,
+                    records
+                ) // একটি হেল্পার ফাংশন হিসেবে রাখতে পারেন
             }
         }
     }
 
+    // এটি নির্দিষ্ট একটি ক্লাসের সব রেকর্ড ফিল্টার করে দেয়
     override fun getDetailedReport(
         className: String,
         month: String,
         year: String
     ): Flow<List<AttendanceEntity>> {
-        // সরাসরি DAO কল করে নির্দিষ্ট ক্লাস এবং মাসের সব রেকর্ড নিয়ে আসা হচ্ছে
-        return attendanceDao.getDetailedMonthlyReport(className, month, year)
+        return attendanceDao.getMonthlyAttendanceData(month, year).map { allRecords ->
+            // সব ডাটা থেকে শুধু ওই ক্লাসের ডাটা ফিল্টার করে দিচ্ছি
+            allRecords.filter { it.className == className }
+        }
+    }
+
+    // এটি সব ক্লাসের ডাটা সরাসরি পাঠিয়ে দেয় (আপনার নতুন স্টুডেন্ট-ওয়াইজ রিপোর্টের জন্য)
+    override fun getAllDetailedReportByMonth(
+        month: String,
+        year: String
+    ): Flow<List<AttendanceEntity>> {
+        return attendanceDao.getMonthlyAttendanceData(month, year)
+    }
+
+    private fun calculateMonthlyReportModel(className: String, records: List<AttendanceEntity>): MonthlyReportModel {
+        // ১. গ্র্যান্ড টোটাল
+        val total = records.size
+        val present = records.count { it.status == "Present" }
+        val absent = total - present
+
+        // ২. ছেলেদের হিসাব
+        val bTotal = records.count { it.gender == GenderTypes.MALE.code }
+        val bPresent = records.count { it.gender == GenderTypes.MALE.code && it.status == "Present" }
+        val bAbsent = bTotal - bPresent
+
+        // ৩. মেয়েদের হিসাব
+        val gTotal = records.count { it.gender == GenderTypes.FEMALE.code }
+        val gPresent = records.count { it.gender == GenderTypes.FEMALE.code && it.status == "Present" }
+        val gAbsent = gTotal - gPresent
+
+        // ৪. উপস্থিতির হার
+        val rate = if (total > 0) (present.toFloat() / total * 100f) else 0f
+
+        return MonthlyReportModel(
+            className = className,
+            totalAttendance = total,
+            presentCount = present,
+            absentCount = absent,
+            boysTotal = bTotal,
+            boysPresent = bPresent,
+            boysAbsent = bAbsent,
+            girlsTotal = gTotal,
+            girlsPresent = gPresent,
+            girlsAbsent = gAbsent,
+            percentage = rate
+        )
     }
 
 }

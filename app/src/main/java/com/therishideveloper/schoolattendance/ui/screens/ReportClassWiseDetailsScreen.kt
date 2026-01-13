@@ -17,28 +17,30 @@ import com.therishideveloper.schoolattendance.ui.components.LoadingOverlay
 import com.therishideveloper.schoolattendance.ui.components.ReportDownloadDialog
 import com.therishideveloper.schoolattendance.ui.components.myTopBarColors
 import com.therishideveloper.schoolattendance.ui.viewmodels.ReportViewModel
+import com.therishideveloper.schoolattendance.utils.ClassTypes
 import com.therishideveloper.schoolattendance.utils.DateUtils.getFormattedDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailsReportScreen(
+fun ClassWiseDetailsReportScreen(
+    onBack: () -> Unit,
     className: String,
     month: String,
     year: String,
-    viewModel: ReportViewModel,
-    onBack: () -> Unit
+    viewModel: ReportViewModel
 ) {
     val displayDate = remember(month, year) { getFormattedDate(month, year) }
-    val attendanceData by viewModel.detailedRecords.collectAsState()
+    val allAttendanceData by viewModel.detailedRecords.collectAsState()
+    val filteredData = remember(allAttendanceData, className) {
+        allAttendanceData.filter { it.className == className }
+    }
     val isDownloading by viewModel.isDownloading.collectAsState()
-
-    // UI States
     var showMenu by remember { mutableStateOf(false) }
     var showDownloadConfirm by remember { mutableStateOf(false) }
-    var selectedFormat by remember { mutableIntStateOf(0) } // 0: PDF, 1: Excel
-
-    LaunchedEffect(className) {
-        viewModel.loadDetailedReport(className)
+    var selectedFormat by remember { mutableIntStateOf(0) }
+    val classTitle = remember(className) {
+        val classType = ClassTypes.fromCode(className)
+        classType.stringRes
     }
 
     Scaffold(
@@ -46,7 +48,7 @@ fun DetailsReportScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "$className - $displayDate",
+                        "${stringResource(id = classTitle)} - $displayDate",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -82,10 +84,10 @@ fun DetailsReportScreen(
         }
     ) { padding ->
         Box(modifier = Modifier.padding(padding)) {
-            if (attendanceData.isEmpty()) {
+            if (filteredData.isEmpty()) {
                 EmptyStateMessage()
             } else {
-                AttendanceTable(attendanceData)
+                AttendanceTable(filteredData)
             }
 
             if (showDownloadConfirm) {

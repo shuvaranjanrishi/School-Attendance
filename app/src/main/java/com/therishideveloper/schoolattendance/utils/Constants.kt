@@ -1,6 +1,34 @@
 package com.therishideveloper.schoolattendance.utils
 
 import com.therishideveloper.schoolattendance.R
+import java.util.Calendar
+
+class Constants {
+    companion object {
+        const val FOLDER_PROFILES = "School Attendance/Profiles"
+        const val FOLDER_REPORTS = "School Attendance/Reports"
+        const val A4_WIDTH = 595
+        const val A4_HEIGHT = 842
+        const val APP_START_YEAR = 2025 // আপনার অ্যাপটি প্রথম যেদিন থেকে শুরু হয়েছে
+        const val MONTH_PREFIX = "month_"
+
+        val MONTH_CODES = listOf("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12")
+
+        fun getDynamicYearRange(): List<String> {
+            val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+            return (APP_START_YEAR..currentYear + 2).map { it.toString() }.reversed()
+        }
+    }
+
+
+//    fun getYearRange(): List<String> {
+//        val currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
+//        return (currentYear - 5..currentYear + 5).map { it.toString() }
+//    }
+//
+//    val MONTH_CODES = listOf("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12")
+}
+
 
 sealed class IdTypes(val code: String, val stringRes: Int) {
     object NID : IdTypes("NID", R.string.id_type_nid)

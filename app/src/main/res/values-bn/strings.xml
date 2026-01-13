@@ -333,8 +333,23 @@
 
     <string name="reports">Reports</string>
     <string name="monthly_report_title">মাসিক রিপোর্ট</string>
+    <string name="monthly_attendance_report">মাসিক হাজিরা রিপোর্ট</string>
     <string name="total">মোট</string>
     <string name="present">উপস্থিত</string>
     <string name="absent">অনুপস্থিত</string>
     <string name="no_data">কোনো তথ্য পাওয়া যায়নি</string>
+
+    <string name="select_month_year">মাস ও বছর নির্বাচন করুন</string>
+    <string name="month_01">জানুয়ারি</string>
+    <string name="month_02">ফেব্রুয়ারি</string>
+    <string name="month_03">মার্চ</string>
+    <string name="month_04">এপ্রিল</string>
+    <string name="month_05">মে</string>
+    <string name="month_06">জুন</string>
+    <string name="month_07">জুলাই</string>
+    <string name="month_08">আগস্ট</string>
+    <string name="month_09">সেপ্টেম্বর</string>
+    <string name="month_10">অক্টোবর</string>
+    <string name="month_11">নভেম্বর</string>
+    <string name="month_12">ডিসেম্বর</string>
 </resources>

@@ -8,9 +8,7 @@ import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.People
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
@@ -28,7 +26,9 @@ sealed class Screen(val route: String, val resId: Int, val icon: ImageVector) {
         fun createRoute(className: String) = "attendance?className=$className"
     }
     object Students : Screen("students", R.string.student_list, Icons.Default.People)
-    object Reports : Screen("reports", R.string.reports, Icons.Default.Assessment)
+    object ReportsSummeryClassWiseScreen : Screen("monthly_class_reports", R.string.reports, Icons.Default.Assessment)
+    object ReportTypeSelectionScreen : Screen("report_type_selection", R.string.reports, Icons.Default.Assessment)
+    object ReportsSummaryStudentWiseScreen : Screen("monthly_student_reports", R.string.reports, Icons.Default.Assessment)
     object Settings : Screen("settings", R.string.settings, Icons.Default.Settings)
     object UserProfile : Screen("user_profile", R.string.profile, Icons.Default.AccountBox)
     object SchoolProfile : Screen("school_profile", R.string.school_profile_settings, Icons.Default.School)
@@ -40,14 +40,19 @@ sealed class Screen(val route: String, val resId: Int, val icon: ImageVector) {
         Screen("student_details_screen/{studentId}", 0, Icons.Default.People) {
         fun createRoute(id: Int) = "student_details_screen/$id"
     }
-    // আপনার Screen ফাইলে এটি যোগ করুন
-    // আপনার Screen ফাইলের ভেতরে এটি এভাবে আপডেট করুন
-    object DetailsReportScreen : Screen(
-        route = "details_report/{className}/{month}/{year}",
+    object ClassWiseDetailsReportScreen : Screen(
+        route = "class_wise_details_report/{className}/{month}/{year}",
         resId = R.string.reports, // অথবা ০ যদি স্ট্রিং না থাকে
         icon = Icons.Default.Assessment
     ) {
         fun createRoute(className: String, month: String, year: String) =
-            "details_report/$className/$month/$year"
+            "class_wise_details_report/$className/$month/$year"
+    }
+    object MonthlyReportDetailsCalendar : Screen(
+        route = "monthly_report_details_calendar/{studentId}",
+        resId = R.string.reports, // বা উপযুক্ত কোনো স্ট্রিং
+        icon = Icons.Default.Assessment
+    ) {
+        fun createRoute(studentId: Int) = "monthly_report_details_calendar/$studentId"
     }
 }

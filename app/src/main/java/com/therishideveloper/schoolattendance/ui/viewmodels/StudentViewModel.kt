@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.therishideveloper.schoolattendance.R
 import com.therishideveloper.schoolattendance.data.local.entity.StudentEntity
+import com.therishideveloper.schoolattendance.domain.repository.AttendanceRepository
 import com.therishideveloper.schoolattendance.domain.repository.StudentRepository
 import com.therishideveloper.schoolattendance.ui.event.UiEvent
 import com.therishideveloper.schoolattendance.utils.PdfGenerator
@@ -15,11 +16,13 @@ import com.therishideveloper.schoolattendance.utils.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.withContext
 
 @HiltViewModel
 class StudentViewModel @Inject constructor(
     private val repository: StudentRepository,
+    private val attendanceRepo: AttendanceRepository,
     private val pdfGenerator: PdfGenerator
 ) : ViewModel() {
 
@@ -41,7 +44,7 @@ class StudentViewModel @Inject constructor(
     private val _toastEvent = MutableSharedFlow<UiEvent>()
     val toastEvent = _toastEvent.asSharedFlow()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     val studentListState = combine(
         _searchQuery,
         _selectedClass,
@@ -103,6 +106,10 @@ class StudentViewModel @Inject constructor(
     fun updateStudent(student: StudentEntity) {
         viewModelScope.launch {
             repository.updateStudent(student)
+            attendanceRepo.updateStudentNameInAttendance(
+                id = student.id,
+                name = student.name
+            )
         }
     }
 
