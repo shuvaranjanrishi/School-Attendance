@@ -25,7 +25,15 @@ fun String.localizeDigitsAndLabels(): String {
                 .replace("Years", "বছর")
                 .replace("Months", "মাস")
                 .replace("Days", "দিন")
+                .replace("Sun", "রবি")
+                .replace("Mon", "সোম")
+                .replace("Tue", "মঙ্গল")
+                .replace("Wed", "বুধ")
+                .replace("Thu", "বৃহ")
+                .replace("Fri", "শুক্র")
+                .replace("Sat", "শনি")
         }
+
         "hi" -> {
             result.replace("Year", "वर्ष")
                 .replace("Month", "माह")
@@ -33,7 +41,16 @@ fun String.localizeDigitsAndLabels(): String {
                 .replace("Years", "वर्ष")
                 .replace("Months", "माह")
                 .replace("Days", "दिन")
+                .replace("Sun", "रवि")
+                .replace("Mon", "सोम")
+                .replace("Tue", "मंगल")
+                .replace("Wed", "बुध")
+                .replace("Thu", "गुरु")
+                .replace("Fri", "शुक्र")
+                .replace("Sat", "शनि")
+
         }
+
         else -> result
     }
 }

@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.therishideveloper.schoolattendance.utils.localizeDigitsAndLabels
 
 @Composable
 fun CircularProgress(
@@ -40,7 +41,7 @@ fun CircularProgress(
             strokeCap = StrokeCap.Round
         )
         Text(
-            text = "${percentage.toInt()}%",
+            text = "${percentage.toInt()}%".localizeDigitsAndLabels(),
             fontSize = (size / 5).sp,
             fontWeight = FontWeight.ExtraBold,
             color = progressColor

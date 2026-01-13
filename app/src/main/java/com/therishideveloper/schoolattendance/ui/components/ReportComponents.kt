@@ -45,6 +45,7 @@ import com.therishideveloper.schoolattendance.R
 import com.therishideveloper.schoolattendance.data.local.entity.AttendanceEntity
 import com.therishideveloper.schoolattendance.data.local.model.MonthlyReportModel
 import com.therishideveloper.schoolattendance.utils.ClassTypes
+import com.therishideveloper.schoolattendance.utils.localizeDigitsAndLabels
 import java.util.Calendar
 import kotlin.collections.find
 
@@ -326,8 +327,8 @@ fun AttendanceCalendarGrid(records: List<AttendanceEntity>) {
 
     Column {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
-            listOf("S", "M", "T", "W", "T", "F", "S").forEach { day ->
-                Text(text = day, fontWeight = FontWeight.Bold, color = Color.Gray)
+            listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat").forEach { day ->
+                Text(text = day.localizeDigitsAndLabels(), fontWeight = FontWeight.Bold, color = Color.Gray)
             }
         }
         Spacer(modifier = Modifier.height(12.dp))
@@ -366,7 +367,7 @@ fun DayCircle(day: Int, status: String?) {
             .background(color = bgColor, shape = CircleShape)
     ) {
         Text(
-            text = day.toString(),
+            text = day.toString().localizeDigitsAndLabels(),
             color = if (status != null) Color.White else Color.Black,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold

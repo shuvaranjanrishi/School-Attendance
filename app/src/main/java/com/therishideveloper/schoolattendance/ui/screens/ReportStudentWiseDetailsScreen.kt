@@ -28,6 +28,8 @@ import com.therishideveloper.schoolattendance.ui.components.myTopBarColors
 import com.therishideveloper.schoolattendance.ui.viewmodels.ReportViewModel
 import com.therishideveloper.schoolattendance.utils.ClassTypes
 import com.therishideveloper.schoolattendance.utils.DateUtils.getFormattedDate
+import com.therishideveloper.schoolattendance.R
+import com.therishideveloper.schoolattendance.utils.localizeDigitsAndLabels
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,13 +56,17 @@ fun ReportStudentWiseDetailsScreen(
     val classType = remember(studentSummary?.className) {
         ClassTypes.fromCode(studentSummary?.className ?: "")
     }
+    val readableClassName = stringResource(id = classType.stringRes).replace(
+        "Class",
+        ""
+    )
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Column {
-                        Text("হাজিরা ক্যালেন্ডার", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.attendance_calender), fontSize = 18.sp, fontWeight = FontWeight.Bold)
                         Text(displayDate, fontSize = 12.sp, color = Color.White.copy(alpha = 0.8f))
                     }
                 },
@@ -78,37 +84,51 @@ fun ReportStudentWiseDetailsScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
+                            .padding(12.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Button(
-                            onClick = { viewModel.downloadStudentCalendarPdf(summary, displayDate, specificStudentRecords) },
+                            onClick = {
+                                viewModel.downloadStudentCalendarPdf(
+                                    summary.copy(className = readableClassName),
+                                        displayDate,
+                                        specificStudentRecords
+                                    )
+                            },
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Icon(Icons.Default.FileDownload, contentDescription = null)
-                            Spacer(Modifier.width(8.dp))
-                            Text("PDF ডাউনলোড")
+                            Spacer(Modifier.width(5.dp))
+                            Text(stringResource(R.string.download_pdf))
                         }
 
                         // ২. শেয়ার বাটন
                         OutlinedButton(
-                            onClick = { viewModel.shareStudentCalendarPdf(summary, displayDate, specificStudentRecords) },
+                            onClick = {
+                                viewModel.shareStudentCalendarPdf(
+                                    summary.copy(className = readableClassName),
+                                    displayDate,
+                                    specificStudentRecords
+                                )
+                            },
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Icon(Icons.Default.Share, contentDescription = null)
-                            Spacer(Modifier.width(8.dp))
-                            Text("শেয়ার করুন")
+                            Spacer(Modifier.width(5.dp))
+                            Text(stringResource(R.string.share_pdf))
                         }
                     }
                 }
             }
         }
     ) { padding ->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(padding)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -117,7 +137,7 @@ fun ReportStudentWiseDetailsScreen(
             ) {
                 if (specificStudentRecords.isEmpty()) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(text = "কোন রেকর্ড পাওয়া যায়নি", color = Color.Gray)
+                        Text(text = stringResource(R.string.no_records_found), color = Color.Gray)
                     }
                 } else {
                     // ২. স্টুডেন্ট প্রোফাইল হেডার (সঠিকভাবে রূপান্তর করা হয়েছে)
@@ -134,7 +154,7 @@ fun ReportStudentWiseDetailsScreen(
                         Spacer(modifier = Modifier.height(4.dp))
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                text = "রোল: ${studentSummary?.rollNo}",
+                                text =  stringResource(R.string.label_roll)+": ${studentSummary?.rollNo?.localizeDigitsAndLabels()}",
                                 color = Color.Gray,
                                 fontSize = 14.sp
                             )
@@ -147,12 +167,7 @@ fun ReportStudentWiseDetailsScreen(
 
                             // ৩. এখানে stringResource ব্যবহার করা হয়েছে
                             Text(
-                                text = "ক্লাস: ${
-                                    stringResource(id = classType.stringRes).replace(
-                                        "Class",
-                                        ""
-                                    )
-                                }",
+                                text = stringResource(R.string.label_class)+": $readableClassName",
                                 color = Color.Gray,
                                 fontSize = 14.sp
                             )
@@ -175,18 +190,18 @@ fun ReportStudentWiseDetailsScreen(
                     ) {
                         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             StatusRow(
-                                label = "মোট দিন",
-                                value = counts.first.toString(),
+                                label = stringResource(R.string.total_days),
+                                value = counts.first.toString().localizeDigitsAndLabels(),
                                 color = Color.Black
                             )
                             StatusRow(
-                                label = "উপস্থিত",
-                                value = counts.second.toString(),
+                                label = stringResource(R.string.present),
+                                value = counts.second.toString().localizeDigitsAndLabels(),
                                 color = Color(0xFF2E7D32)
                             )
                             StatusRow(
-                                label = "অনুপস্থিত",
-                                value = counts.third.toString(),
+                                label = stringResource(R.string.absent),
+                                value = counts.third.toString().localizeDigitsAndLabels(),
                                 color = Color(0xFFD32F2F)
                             )
                         }
@@ -208,11 +223,11 @@ fun ReportStudentWiseDetailsScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Start
                     ) {
-                        LegendItem(label = "Present", color = Color(0xFF2E7D32))
+                        LegendItem(label = stringResource(R.string.present), color = Color(0xFF2E7D32))
                         Spacer(modifier = Modifier.width(16.dp))
-                        LegendItem(label = "Absent", color = Color(0xFFD32F2F))
+                        LegendItem(label = stringResource(R.string.absent), color = Color(0xFFD32F2F))
                         Spacer(modifier = Modifier.width(16.dp))
-                        LegendItem(label = "No Class", color = Color.LightGray)
+                        LegendItem(label = stringResource(R.string.no_class), color = Color.LightGray)
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -221,7 +236,7 @@ fun ReportStudentWiseDetailsScreen(
             }
 
             if (isDownloading) {
-                LoadingOverlay(isLoading = true, message = "PDF তৈরি হচ্ছে...")
+                LoadingOverlay(isLoading = true, message = stringResource(R.string.pdf_creating_msg))
             }
         }
     }

@@ -351,4 +351,11 @@
     <string name="month_10">अक्टूबर</string>
     <string name="month_11">নভেম্বর</string>
     <string name="month_12">दिसंबर</string>
+
+    <string name="attendance_calender">हाज़िरी कैलेंडर</string>
+    <string name="download_pdf">PDF डाउनलोड करें</string>
+    <string name="share_pdf">PDF शेयर करें</string>
+    <string name="no_records_found">कोई रिकॉर्ड नहीं मिला</string>
+    <string name="total_days">कुल दिन</string>
+    <string name="no_class">छुट्टी / कोई क्लास नहीं</string>
 </resources>

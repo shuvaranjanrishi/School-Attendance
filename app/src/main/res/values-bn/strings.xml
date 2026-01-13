@@ -352,4 +352,11 @@
     <string name="month_10">অক্টোবর</string>
     <string name="month_11">নভেম্বর</string>
     <string name="month_12">ডিসেম্বর</string>
+
+    <string name="attendance_calender">হাজিরা ক্যালেন্ডার</string>
+    <string name="download_pdf">PDF ডাউনলোড</string>
+    <string name="share_pdf">PDF শেয়ার করুন</string>
+    <string name="no_records_found">কোন রেকর্ড পাওয়া যায়নি</string>
+    <string name="total_days">মোট দিন</string>
+    <string name="no_class">ছুটি/ক্লাস নেই</string>
 </resources>

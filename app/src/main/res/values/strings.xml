@@ -351,4 +351,11 @@
     <string name="month_10">October</string>
     <string name="month_11">November</string>
     <string name="month_12">December</string>
+
+    <string name="attendance_calender">Attendance Calender</string>
+    <string name="download_pdf">Download PDF</string>
+    <string name="share_pdf">Share PDF</string>
+    <string name="no_records_found">No Records Found</string>
+    <string name="total_days">Total Days</string>
+    <string name="no_class">No Class</string>
 </resources>

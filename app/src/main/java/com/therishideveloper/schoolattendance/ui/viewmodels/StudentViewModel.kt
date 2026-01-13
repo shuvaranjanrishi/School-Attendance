@@ -31,11 +31,8 @@ class StudentViewModel @Inject constructor(
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
-
     private val refreshTrigger = MutableStateFlow(System.currentTimeMillis())
-
-    // ১. ক্লাস ফিল্টারের জন্য নতুন স্টেট
-    private val _selectedClass = MutableStateFlow<String?>(null) // null মানে সব ক্লাস
+    private val _selectedClass = MutableStateFlow<String?>(null)
     val selectedClass = _selectedClass.asStateFlow()
 
     private val _selectedGender = MutableStateFlow<String?>(null)
