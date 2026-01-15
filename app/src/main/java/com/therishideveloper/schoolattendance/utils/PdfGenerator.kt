@@ -32,44 +32,25 @@ class PdfGenerator @Inject constructor(
     private val schoolRepository: SchoolRepository,
     private val settingsManager: SettingsManager
 ) {
-    private data class PdfPageSetup(
-        val document: PdfDocument,
-        val page: PdfDocument.Page,
-        val canvas: Canvas,
-        val paint: Paint,
-        val pageWidth: Int,
-        val pageHeight: Int
-    )
-
-    private fun setupPdfPage(isLandscape: Boolean = false): PdfPageSetup {
-        val pdfDocument = PdfDocument()
-        val width = if (isLandscape) Constants.A4_HEIGHT else Constants.A4_WIDTH
-        val height = if (isLandscape) Constants.A4_WIDTH else Constants.A4_HEIGHT
-
-        val pageInfo = PdfDocument.PageInfo.Builder(width, height, 1).create()
-        val page = pdfDocument.startPage(pageInfo)
-
-        return PdfPageSetup(
-            document = pdfDocument,
-            page = page,
-            canvas = page.canvas,
-            paint = Paint().apply { isAntiAlias = true },
-            pageWidth = width,
-            pageHeight = height
-        )
-    }
 
     suspend fun downloadStudentProfilePdf(student: StudentEntity): Result<File> {
         val school = schoolRepository.getSchool()
-        val (pdfDocument, page, canvas, paint, pageWidth, pageHeight) = setupPdfPage(false)
+        val (pdfDocument, page, canvas, paint, pageWidth, pageHeight) = PdfHelper.setupPdfPage(false)
 
-        drawPortraitHeader(
+        val schoolName = school?.name ?: getLabel(R.string.pdf_hint_school_name)
+        val schoolAddress = school?.address ?: getLabel(R.string.pdf_hint_school_address)
+        val pageTitle = getLabel(R.string.pdf_student_profile)
+        val studentProfile = getLabel(R.string.pdf_profile_photo)
+        PdfHelper.drawPortraitHeader(
             student,
             school,
             canvas,
             pageWidth,
             paint,
-            getLabel(R.string.pdf_student_profile)
+            schoolName,
+            schoolAddress,
+            pageTitle,
+            studentProfile
         )
 
         // --- ডাটা সেকশন শুরু ---
@@ -77,17 +58,33 @@ class PdfGenerator @Inject constructor(
         val lineSpacing = 38f
 
         // বেসিক ইনফো
-        drawDataRow(canvas, paint, R.string.pdf_label_name, student.name, 60f, yPos, true)
+        PdfHelper.drawDataRow(
+            canvas,
+            paint,
+            getLabel(R.string.pdf_label_name),
+            student.name,
+            60f,
+            yPos,
+            true
+        )
         yPos += lineSpacing
 
         val rollValue = student.rollNo.localizeDigitsAndLabels()
         val classValue =
             getLabel(ClassTypes.fromCode(student.classCode).stringRes).replace("Class ", "")
-        drawDataRow(canvas, paint, R.string.pdf_label_roll, rollValue, 60f, yPos, true)
-        drawDataRow(
+        PdfHelper.drawDataRow(
             canvas,
             paint,
-            R.string.pdf_label_class,
+            getLabel(R.string.pdf_label_roll),
+            rollValue,
+            60f,
+            yPos,
+            true
+        )
+        PdfHelper.drawDataRow(
+            canvas,
+            paint,
+            getLabel(R.string.pdf_label_class),
             classValue,
             (pageWidth / 2f),
             yPos,
@@ -98,10 +95,10 @@ class PdfGenerator @Inject constructor(
         // আইডি ও পার্সোনাল ডিটেইলস
         val idLabelRes =
             if (student.idType == IdTypes.NID.code) R.string.pdf_label_nid else R.string.pdf_label_birth_reg
-        drawDataRow(
+        PdfHelper.drawDataRow(
             canvas,
             paint,
-            idLabelRes,
+            getLabel(idLabelRes),
             student.nidOrBirthReg.localizeDigitsAndLabels(),
             60f,
             yPos
@@ -117,23 +114,23 @@ class PdfGenerator @Inject constructor(
         )
 
         for ((res, value) in details) {
-            drawDataRow(canvas, paint, res, value, 60f, yPos)
+            PdfHelper.drawDataRow(canvas, paint, getLabel(res), value, 60f, yPos)
             yPos += lineSpacing
         }
 
         // জেন্ডার ও ধর্ম (একই লাইনে)
-        drawDataRow(
+        PdfHelper.drawDataRow(
             canvas,
             paint,
-            R.string.pdf_label_gender,
+            getLabel(R.string.pdf_label_gender),
             getLabel(GenderTypes.fromCode(student.genderCode).stringRes),
             60f,
             yPos
         )
-        drawDataRow(
+        PdfHelper.drawDataRow(
             canvas,
             paint,
-            R.string.pdf_label_religion,
+            getLabel(R.string.pdf_label_religion),
             getLabel(ReligionTypes.fromCode(student.religionCode).stringRes),
             (pageWidth / 2f),
             yPos
@@ -141,44 +138,55 @@ class PdfGenerator @Inject constructor(
         yPos += lineSpacing
 
         // অন্যান্য তথ্য
-        drawDataRow(
+        PdfHelper.drawDataRow(
             canvas,
             paint,
-            R.string.pdf_label_blood_group,
+            getLabel(R.string.pdf_label_blood_group),
             getLabel(BloodGroupTypes.fromCode(student.bloodGroup).stringRes),
             60f,
             yPos
         )
         yPos += lineSpacing
-        drawDataRow(
+        PdfHelper.drawDataRow(
             canvas,
             paint,
-            R.string.pdf_label_address,
+            getLabel(R.string.pdf_label_address),
             student.address.ifBlank { getLabel(R.string.not_given) },
             60f,
             yPos
         )
         yPos += lineSpacing
-        drawDataRow(
+        PdfHelper.drawDataRow(
             canvas,
             paint,
-            R.string.pdf_label_country,
+            getLabel(R.string.pdf_label_country),
             getLabel(CountryTypes.fromCode(student.country).stringRes),
             60f,
             yPos
         )
         yPos += lineSpacing
-        drawDataRow(
+        PdfHelper.drawDataRow(
             canvas,
             paint,
-            R.string.pdf_label_admission_date,
+            getLabel(R.string.pdf_label_admission_date),
             student.admissionDate.localizeDigitsAndLabels(),
             60f,
             yPos
         )
 
         //draw footer
-        drawProfileFooter(canvas, pageWidth, pageHeight, paint)
+        val devName = getLabel(R.string.dev_name)
+        val devAuthorName = getLabel(R.string.dev_author_name)
+        val devCopyRights = getLabel(R.string.dev_copy_rights)
+        PdfHelper.drawProfileFooter(
+            canvas,
+            pageWidth,
+            pageHeight,
+            paint,
+            devName,
+            devAuthorName,
+            devCopyRights
+        )
 
         pdfDocument.finishPage(page)
 
@@ -186,303 +194,14 @@ class PdfGenerator @Inject constructor(
         val title = getLabel(R.string.pdf_download_success)
         val desc = getLabel(R.string.pdf_download_desc).format(student.name)
 
-        return finalizePdf(pdfDocument, Constants.FOLDER_PROFILES, fileName, title, desc)
-    }
-
-    private fun finalizePdf(
-        pdfDocument: PdfDocument,
-        folderName: String,
-        fileName: String,
-        title: String,
-        desc: String,
-        isSharing: Boolean = false
-    ): Result<File> {
-        return try {
-            val file = savePdfFile(pdfDocument, folderName, fileName, isSharing)
-
-            if (!isSharing) {
-                showDownloadNotification(
-                    context, file, title,
-                    desc, "application/pdf"
-                )
-            }
-            Result.Success(file)
-        } catch (e: Exception) {
-            Result.Error(e.localizedMessage ?: "Failed to save PDF")
-        } finally {
-            pdfDocument.close()
-        }
-    }
-
-    private suspend fun drawPortraitHeader(
-        student: StudentEntity,
-        school: SchoolEntity?,
-        canvas: Canvas,
-        pageWidth: Int,
-        paint: Paint,
-        title: String
-    ) {
-        //school logo
-        school?.logo?.let { bytes ->
-            val originalBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-            val circularBitmap = getCircularBitmap(originalBitmap)
-            canvas.drawBitmap(circularBitmap.scale(70, 70, false), 50f, 90f, null)
-            circularBitmap.recycle()
-        }
-        //draw school name
-        val schoolName = school?.name ?: getLabel(R.string.pdf_hint_school_name)
-        paint.textAlign = Paint.Align.CENTER
-        paint.isFakeBoldText = true
-        paint.textSize = if (paint.measureText(schoolName) > 280f) 22f else 28f
-        canvas.drawText(schoolName, (pageWidth / 2).toFloat(), 55f, paint)
-        //draw school address
-        paint.textSize = 14f
-        paint.isFakeBoldText = false
-        canvas.drawText(
-            school?.address ?: getLabel(R.string.pdf_hint_school_address),
-            (pageWidth / 2).toFloat(),
-            80f,
-            paint
+        return PdfHelper.finalizePdf(
+            context,
+            pdfDocument,
+            Constants.FOLDER_PROFILES,
+            fileName,
+            title,
+            desc
         )
-
-        //draw page title
-        paint.textSize = 20f
-        paint.isFakeBoldText = true
-        paint.color = Color.DKGRAY
-        canvas.drawText(title, (pageWidth / 2).toFloat(), 110f, paint)
-
-        //draw student photo
-        drawPhotoBox(canvas, student.image, paint)
-
-        //draw two line circle
-        val circleRadius = 3f
-        val lineStart = 40f
-        val lineEnd = 200f
-        paint.style = Paint.Style.FILL
-        paint.color = Color.LTGRAY
-        canvas.drawCircle(lineStart, lineEnd, circleRadius, paint)
-        canvas.drawCircle((pageWidth - lineStart), lineEnd, circleRadius, paint)
-
-        //draw header divider
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = 1f
-        paint.color = Color.LTGRAY
-        canvas.drawLine(lineStart, lineEnd, (pageWidth - lineStart), lineEnd, paint)
-
-    }
-
-    private suspend fun drawPhotoBox(canvas: Canvas, imageBytes: ByteArray?, paint: Paint) {
-        val boxWidth = 100f;
-        val boxHeight = 120f;
-        val boxLeft = 450f;
-        val boxTop = 70f
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = 1.5f
-        paint.color = Color.BLACK
-        paint.pathEffect = DashPathEffect(floatArrayOf(5f, 5f), 0f)
-        canvas.drawRect(boxLeft, boxTop, boxLeft + boxWidth, boxTop + boxHeight, paint)
-        paint.pathEffect = null
-
-        imageBytes?.let {
-            val bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
-            canvas.drawBitmap(
-                bitmap.scale(boxWidth.toInt(), boxHeight.toInt(), false),
-                boxLeft,
-                boxTop,
-                null
-            )
-        } ?: run {
-            paint.style = Paint.Style.FILL
-            paint.textSize = 12f
-            paint.textAlign = Paint.Align.CENTER
-            canvas.drawText(
-                getLabel(R.string.pdf_profile_photo),
-                boxLeft + 50f,
-                boxTop + 65f,
-                paint
-            )
-        }
-    }
-
-    private suspend fun drawDataRow(
-        canvas: Canvas,
-        paint: Paint,
-        labelRes: Int,
-        value: String,
-        x: Float,
-        y: Float,
-        isBold: Boolean = false
-    ) {
-        val label = "${getLabel(labelRes)}: "
-        paint.style = Paint.Style.FILL
-        paint.color = Color.BLACK
-        paint.textAlign = Paint.Align.LEFT
-        paint.textSize = 22f
-        paint.isFakeBoldText = false
-        canvas.drawText(label, x, y, paint)
-        if (isBold) paint.isFakeBoldText = true
-        canvas.drawText(value, x + paint.measureText(label) + 10f, y, paint)
-        paint.isFakeBoldText = false
-    }
-
-    private suspend fun drawProfileFooter(
-        canvas: Canvas,
-        pageWidth: Int,
-        pageHeight: Int,
-        paint: Paint
-    ) {
-        val footerTop = pageHeight - 60f
-        paint.style = Paint.Style.FILL
-        paint.color = "#F5F5F5".toColorInt()
-        canvas.drawRect(0f, footerTop, pageWidth.toFloat(), pageHeight - 10f, paint)
-
-        paint.textAlign = Paint.Align.CENTER
-        paint.color = Color.BLACK
-        paint.textSize = 12f
-        canvas.drawText(
-            getLabel(R.string.dev_name),
-            (pageWidth / 2).toFloat(),
-            footerTop + 20f,
-            paint
-        )
-        paint.textSize = 10f
-        paint.color = Color.LTGRAY
-        canvas.drawText(
-            getLabel(R.string.label_developer),
-            (pageWidth / 2).toFloat(),
-            footerTop + 30f,
-            paint
-        )
-        canvas.drawText(
-            getLabel(R.string.dev_copy_rights),
-            (pageWidth / 2).toFloat(),
-            footerTop + 40f,
-            paint
-        )
-    }
-
-    private suspend fun getLabel(resId: Int): String {
-        val savedLanguage = settingsManager.languageFlow.first()
-        val config = Configuration(context.resources.configuration)
-        config.setLocale(Locale(savedLanguage.code))
-        return context.createConfigurationContext(config).getString(resId)
-    }
-
-    private suspend fun drawCommonHeader(
-        canvas: Canvas,
-        school: SchoolEntity?,
-        pageWidth: Int,
-        paint: Paint,
-        title: String
-    ) {
-        //draw school logo
-        school?.logo?.let { bytes ->
-            val originalBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-            val circularBitmap = getCircularBitmap(originalBitmap)
-            canvas.drawBitmap(circularBitmap.scale(50, 50, false), 40f, 20f, null)
-            circularBitmap.recycle()
-        }
-        //draw school name
-        val schoolName = school?.name ?: getLabel(R.string.pdf_hint_school_name)
-        paint.style = Paint.Style.FILL
-        paint.textAlign = Paint.Align.CENTER
-        paint.isFakeBoldText = true
-        paint.textSize = if (paint.measureText(schoolName) > 280f) 22f else 28f
-        paint.color = Color.BLACK
-        canvas.drawText(schoolName, (pageWidth / 2).toFloat(), 55f, paint)
-
-        //draw address
-        paint.textSize = 14f
-        paint.isFakeBoldText = false
-        paint.color = Color.GRAY
-        canvas.drawText(
-            school?.address ?: getLabel(R.string.pdf_hint_school_address),
-            (pageWidth / 2).toFloat(),
-            80f,
-            paint
-        )
-
-        //draw page title
-        paint.textSize = 16f
-        paint.isFakeBoldText = true
-        paint.color = Color.DKGRAY
-        canvas.drawText(title, (pageWidth / 2).toFloat(), 110f, paint)
-
-        //draw two line circle
-        val circleRadius = 3f
-        val lineStart = 40f
-        val lineEnd = 140f
-        paint.style = Paint.Style.FILL
-        paint.color = Color.LTGRAY
-        canvas.drawCircle(lineStart, lineEnd, circleRadius, paint)
-        canvas.drawCircle((pageWidth - lineStart), lineEnd, circleRadius, paint)
-
-        //draw divider line
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = 1f
-        paint.color = Color.LTGRAY
-        paint.pathEffect = null
-        canvas.drawLine(lineStart, lineEnd, (pageWidth - lineStart), lineEnd, paint)
-
-        //make paint default
-        paint.style = Paint.Style.FILL
-        paint.isFakeBoldText = false
-    }
-
-    private suspend fun drawCommonFooter(
-        canvas: Canvas,
-        pageWidth: Int,
-        pageHeight: Int,
-        paint: Paint
-    ) {
-        //draw two line circle
-        val circleRadius = 3f
-        val lineStart = 40f
-        val lineEnd = pageHeight - 50f
-        paint.style = Paint.Style.FILL
-        paint.color = Color.LTGRAY
-        canvas.drawCircle(lineStart, lineEnd, circleRadius, paint)
-        canvas.drawCircle((pageWidth - lineStart), lineEnd, circleRadius, paint)
-        //draw footer divider line
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = 1f
-        paint.color = Color.LTGRAY
-        paint.pathEffect = null
-        canvas.drawLine(lineStart, lineEnd, (pageWidth - lineStart), lineEnd, paint)
-
-        paint.style = Paint.Style.FILL
-        paint.textSize = 11f
-        paint.color = Color.GRAY
-        paint.textAlign = Paint.Align.LEFT
-        val genDate = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(Date())
-            .localizeDigitsAndLabels()
-        canvas.drawText(
-            "${getLabel(R.string.generated_on)}: $genDate",
-            40f,
-            pageHeight - 30f,
-            paint
-        )
-
-        paint.isFakeBoldText = true
-        paint.color = "#1976D2".toColorInt()
-        paint.textAlign = Paint.Align.RIGHT
-        canvas.drawText(
-            "${getLabel(R.string.label_developer)}: ${getLabel(R.string.dev_name)}",
-            (pageWidth - 40f),
-            pageHeight - 30f,
-            paint
-        )
-    }
-
-    private fun getCircularBitmap(src: Bitmap): Bitmap {
-        val size = minOf(src.width, src.height)
-        val output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(output)
-        val paint = Paint().apply { isAntiAlias = true }
-        canvas.drawCircle((size / 2).toFloat(), (size / 2).toFloat(), (size / 2).toFloat(), paint)
-        paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
-        canvas.drawBitmap(src, Rect(0, 0, size, size), Rect(0, 0, size, size), paint)
-        return output
     }
 
     suspend fun generateMonthlyAttendanceReport(
@@ -491,16 +210,22 @@ class PdfGenerator @Inject constructor(
         attendanceData: List<AttendanceEntity>
     ): Result<File> {
         val school = schoolRepository.getSchool()
-        val (pdfDocument, page, canvas, paint, pageWidth, pageHeight) = setupPdfPage(true)
+        val (pdfDocument, page, canvas, paint, pageWidth, pageHeight) = PdfHelper.setupPdfPage(true)
 
         // ২. হেডার
+        val schoolName = school?.name ?: getLabel(R.string.pdf_hint_school_name)
+        val schoolAddress = school?.address ?: getLabel(R.string.pdf_hint_school_address)
         val className = getLabel(ClassTypes.fromCode(classCode).stringRes).replace("Class ", "")
-        drawCommonHeader(
+        val pageTitle = "${getLabel(R.string.label_report)}: $className ($monthYear)"
+
+        PdfHelper.drawCommonHeader(
             canvas,
             school,
             pageWidth,
             paint,
-            "${getLabel(R.string.label_report)}: $className ($monthYear)"
+            pageTitle,
+            schoolName,
+            schoolAddress
         )
 
         // ৩. টেবিল ডাইমেনশন ও কালার
@@ -587,8 +312,22 @@ class PdfGenerator @Inject constructor(
         }
 
         //draw footer
-        drawCommonFooter(canvas, pageWidth, pageHeight, paint)
+        val genDate = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(Date())
+            .localizeDigitsAndLabels()
+        val devName = getLabel(R.string.dev_name)
+        val devLabel = getLabel(R.string.label_developer)
+        val genLabel = getLabel(R.string.generated_on)
 
+        PdfHelper.drawCommonFooter(
+            canvas = canvas,
+            pageWidth = pageWidth,
+            pageHeight = pageHeight,
+            paint = paint,
+            devName = devName,
+            devLabel = devLabel,
+            genLabel = genLabel,
+            genDate = genDate
+        )
         pdfDocument.finishPage(page)
 
         val fileName =
@@ -596,7 +335,14 @@ class PdfGenerator @Inject constructor(
         val title = getLabel(R.string.pdf_download_success)
         val desc = "$className - $monthYear"
 
-        return finalizePdf(pdfDocument, Constants.FOLDER_PROFILES, fileName, title, desc)
+        return PdfHelper.finalizePdf(
+            context,
+            pdfDocument,
+            Constants.FOLDER_PROFILES,
+            fileName,
+            title,
+            desc
+        )
     }
 
     suspend fun generateStudentMonthlyDetailsReport(
@@ -612,12 +358,22 @@ class PdfGenerator @Inject constructor(
         isSharing: Boolean = false
     ): Result<File> {
         val school = schoolRepository.getSchool()
-        val (pdfDocument, page, canvas, paint, pageWidth, pageHeight) = setupPdfPage(false)
+        val (pdfDocument, page, canvas, paint, pageWidth, pageHeight) = PdfHelper.setupPdfPage(false)
+
         val title = "${getLabel(R.string.monthly_attendance_report)}: $monthYear"
+        val schoolName = school?.name ?: getLabel(R.string.pdf_hint_school_name)
+        val schoolAddress = school?.address ?: getLabel(R.string.pdf_hint_school_address)
+        PdfHelper.drawCommonHeader(
+            canvas,
+            school,
+            pageWidth,
+            paint,
+            title,
+            schoolName,
+            schoolAddress
+        )
 
-        drawCommonHeader(canvas, school, pageWidth, paint, title)
-
-        canvas.drawRoundRect(40f, 165f, (pageWidth - 40).toFloat(), 265f, 15f, 15f, paint)
+        canvas.drawRoundRect(40f, 165f, (pageWidth - 40f), 265f, 15f, 15f, paint)
 
         val cardTop = 165f
         val cardBottom = 265f
@@ -698,8 +454,24 @@ class PdfGenerator @Inject constructor(
         )
 
         drawAttendanceLegend(canvas, paint, 300f)
-        drawCalendarGrid(canvas, paint, 65f, 380f, records)
-        drawCommonFooter(canvas, pageWidth, pageHeight, paint)
+        PdfHelper.drawCalendarGrid(canvas, paint, 65f, 380f, records)
+
+        val genDate = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(Date())
+            .localizeDigitsAndLabels()
+        val devName = getLabel(R.string.dev_name)
+        val devLabel = getLabel(R.string.label_developer)
+        val genLabel = getLabel(R.string.generated_on)
+
+        PdfHelper.drawCommonFooter(
+            canvas = canvas,
+            pageWidth = pageWidth,
+            pageHeight = pageHeight,
+            paint = paint,
+            devName = devName,
+            devLabel = devLabel,
+            genLabel = genLabel,
+            genDate = genDate
+        )
 
         pdfDocument.finishPage(page)
 
@@ -707,7 +479,8 @@ class PdfGenerator @Inject constructor(
         val fileName = "Report_${studentName.replace(" ", "_")}_${monthYear.replace(" ", "_")}.pdf"
         val desc = getLabel(R.string.pdf_download_desc).format(studentName)
 
-        return finalizePdf(
+        return PdfHelper.finalizePdf(
+            context = context,
             pdfDocument = pdfDocument,
             folderName = folder,
             fileName = fileName,
@@ -715,6 +488,25 @@ class PdfGenerator @Inject constructor(
             desc = desc,
             isSharing = isSharing
         )
+    }
+
+    fun sharePdfFile(file: File) {
+        val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "application/pdf"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        context.startActivity(
+            Intent.createChooser(intent, "Share via").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        )
+    }
+
+    private suspend fun getLabel(resId: Int): String {
+        val savedLanguage = settingsManager.languageFlow.first()
+        val config = Configuration(context.resources.configuration)
+        config.setLocale(Locale(savedLanguage.code))
+        return context.createConfigurationContext(config).getString(resId)
     }
 
     private suspend fun drawAttendanceLegend(canvas: Canvas, paint: Paint, legendY: Float) {
@@ -740,96 +532,4 @@ class PdfGenerator @Inject constructor(
         canvas.drawText(getLabel(R.string.no_class), 275f, legendY, paint)
     }
 
-    private fun drawCalendarGrid(
-        canvas: Canvas,
-        paint: Paint,
-        startX: Float,
-        startY: Float,
-        records: List<AttendanceEntity>
-    ) {
-        val cellSize = 70f
-        paint.color = Color.DKGRAY
-        paint.textSize = 15f
-        paint.textAlign = Paint.Align.CENTER
-        paint.isFakeBoldText = true
-
-        // বারের নাম (Sun, Mon...)
-        val daysOfWeek = listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
-        daysOfWeek.forEachIndexed { index, day ->
-            canvas.drawText(
-                day.localizeDigitsAndLabels(),
-                startX + (index * cellSize) + 30f,
-                startY - 35f,
-                paint
-            )
-        }
-
-        // ক্যালেন্ডার ডেইস লুপ
-        val calendar = Calendar.getInstance()
-        val maxDays = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-        var currentX = startX
-        var currentY = startY
-        paint.isFakeBoldText = false
-
-        for (day in 1..maxDays) {
-            val dayStr = String.format("%02d", day)
-            val record = records.find { it.date.startsWith(dayStr) }
-
-            // স্ট্যাটাস অনুযায়ী সার্কেল কালার
-            paint.color = when (record?.status) {
-                "Present" -> "#2E7D32".toColorInt()
-                "Absent" -> "#D32F2F".toColorInt()
-                else -> "#EEEEEE".toColorInt()
-            }
-            canvas.drawCircle(currentX + 30f, currentY + 10f, 25f, paint)
-
-            // দিনের সংখ্যা (সাদা বা কালো)
-            paint.color = if (record != null) Color.WHITE else Color.BLACK
-            canvas.drawText(
-                day.toString().localizeDigitsAndLabels(),
-                currentX + 30f,
-                currentY + 16f,
-                paint
-            )
-
-            // ৭ দিন পর পর নতুন লাইন
-            if (day % 7 == 0) {
-                currentX = startX
-                currentY += cellSize
-            } else {
-                currentX += cellSize
-            }
-        }
-    }
-
-    private fun savePdfFile(
-        pdf: PdfDocument,
-        folder: String,
-        fileName: String,
-        isSharing: Boolean
-    ): File {
-        val dir =
-            if (isSharing) context.cacheDir else Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS
-            )
-        val finalFolder = File(dir, folder); if (!finalFolder.exists()) finalFolder.mkdirs()
-        val file = File(finalFolder, fileName.replace(" ", "_"))
-        pdf.writeTo(FileOutputStream(file)); pdf.close()
-        return file
-    }
-
-    fun sharePdfFile(file: File) {
-        val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "application/pdf"
-            putExtra(Intent.EXTRA_STREAM, uri)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-        context.startActivity(
-            Intent.createChooser(intent, "Share via").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        )
-    }
-
 }
-
-//712
