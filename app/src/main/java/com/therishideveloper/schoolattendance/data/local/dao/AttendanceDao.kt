@@ -14,14 +14,14 @@ interface AttendanceDao {
     @Query("UPDATE attendance_records SET studentName = :newName WHERE studentId = :id")
     suspend fun updateStudentNameInAttendance(id: Int, newName: String)
 
-    @Query("SELECT * FROM attendance_records WHERE className = :className AND date = :date ORDER BY CAST(rollNo AS INTEGER) ASC")
+    @Query("SELECT * FROM attendance_records WHERE classCode = :className AND date = :date ORDER BY CAST(rollNo AS INTEGER) ASC")
     fun getAttendanceByClassAndDate(className: String, date: String): Flow<List<AttendanceEntity>>
 
     @Query(
         """
         SELECT 
             :className as className,
-            (SELECT COUNT(*) FROM students WHERE className = :className) as totalStudents,
+            (SELECT COUNT(*) FROM students WHERE classCode = :className) as totalStudents,
             COUNT(CASE WHEN status = 'Present' THEN 1 END) as totalPresent,
             COUNT(CASE WHEN status = 'Absent' THEN 1 END) as totalAbsent,
             (COUNT(CASE WHEN status = 'Present' OR status = 'Absent' THEN 1 END) > 0) as isTaken

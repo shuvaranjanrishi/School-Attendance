@@ -24,22 +24,22 @@ import com.therishideveloper.schoolattendance.utils.DateUtils.getFormattedDate
 @Composable
 fun ClassWiseDetailsReportScreen(
     onBack: () -> Unit,
-    className: String,
+    classCode: String,
     month: String,
     year: String,
     viewModel: ReportViewModel
 ) {
     val displayDate = remember(month, year) { getFormattedDate(month, year) }
     val allAttendanceData by viewModel.detailedRecords.collectAsState()
-    val filteredData = remember(allAttendanceData, className) {
-        allAttendanceData.filter { it.className == className }
+    val filteredData = remember(allAttendanceData, classCode) {
+        allAttendanceData.filter { it.classCode == classCode }
     }
     val isDownloading by viewModel.isDownloading.collectAsState()
     var showMenu by remember { mutableStateOf(false) }
     var showDownloadConfirm by remember { mutableStateOf(false) }
     var selectedFormat by remember { mutableIntStateOf(0) }
-    val classTitle = remember(className) {
-        val classType = ClassTypes.fromCode(className)
+    val className = remember(classCode) {
+        val classType = ClassTypes.fromCode(classCode)
         classType.stringRes
     }
 
@@ -48,7 +48,7 @@ fun ClassWiseDetailsReportScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "${stringResource(id = classTitle)} - $displayDate",
+                        "${stringResource(id = className)} - $displayDate",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -65,13 +65,13 @@ fun ClassWiseDetailsReportScreen(
                         }
                         DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
                             DropdownMenuItem(
-                                text = { Text("Download as PDF") },
+                                text = { Text(stringResource(R.string.download_pdf)) },
                                 onClick = {
                                     showMenu = false; selectedFormat = 0; showDownloadConfirm = true
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("Download as Excel (.xlsx)") },
+                                text = { Text(stringResource(R.string.download_excel_file)) },
                                 onClick = {
                                     showMenu = false; selectedFormat = 1; showDownloadConfirm = true
                                 }
@@ -92,16 +92,16 @@ fun ClassWiseDetailsReportScreen(
 
             if (showDownloadConfirm) {
                 ReportDownloadDialog(
-                    className = className,
+                    classCode = classCode,
                     date = displayDate,
                     isExcel = selectedFormat == 1,
                     onConfirm = {
                         showDownloadConfirm = false
                         if (selectedFormat == 0) viewModel.generateMonthlyReportPdf(
-                            className,
+                            classCode,
                             displayDate
                         )
-                        else viewModel.generateMonthlyReportExcel(className, displayDate)
+                        else viewModel.generateMonthlyReportExcel(classCode, displayDate)
                     },
                     onDismiss = { showDownloadConfirm = false }
                 )

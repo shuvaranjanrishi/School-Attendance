@@ -2,7 +2,6 @@ package com.therishideveloper.schoolattendance.ui.screens
 
 import android.content.Intent
 import android.graphics.BitmapFactory
-import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -181,7 +180,7 @@ fun StudentProfileHeader(student: StudentEntity) {
                 }
             }
             Spacer(modifier = Modifier.height(12.dp))
-            val classType = ClassTypes.fromCode(student.className)
+            val classType = ClassTypes.fromCode(student.classCode)
             Text(
                 text = student.name,
                 style = MaterialTheme.typography.headlineSmall,
@@ -286,14 +285,14 @@ fun StudentInfoCard(student: StudentEntity, onCallClick: () -> Unit) {
                 }
             }
             DetailDivider()
-            val genderType = GenderTypes.fromCode(student.gender)
+            val genderType = GenderTypes.fromCode(student.genderCode)
             InfoRow(
                 Icons.Default.Wc,
                 label = stringResource(R.string.label_gender),
                 value = stringResource(genderType.stringRes)
             )
             DetailDivider()
-            val religionType = ReligionTypes.fromCode(student.religion)
+            val religionType = ReligionTypes.fromCode(student.religionCode)
             InfoRow(
                 Icons.Default.Church,
                 label = stringResource(R.string.label_religion),

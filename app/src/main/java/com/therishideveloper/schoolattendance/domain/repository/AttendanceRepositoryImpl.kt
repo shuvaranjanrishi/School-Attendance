@@ -33,8 +33,8 @@ class AttendanceRepositoryImpl @Inject constructor(
                         studentId = student.id,
                         studentName = student.name,
                         rollNo = student.rollNo,
-                        gender = student.gender,
-                        className = student.className,
+                        genderCode = student.genderCode,
+                        classCode = student.classCode,
                         date = date,
                         status = "Present"
                     )
@@ -87,7 +87,7 @@ class AttendanceRepositoryImpl @Inject constructor(
     override fun getMonthlyReport(month: String, year: String): Flow<List<MonthlyReportModel>> {
         // এখানে DAO এর সেই একটি কমন ফাংশন কল করছি
         return attendanceDao.getMonthlyAttendanceData(month, year).map { entities ->
-            entities.groupBy { it.className }.map { (className, records) ->
+            entities.groupBy { it.classCode }.map { (className, records) ->
                 // ... আপনার আগের ক্যালকুলেশন লজিক (total, present, absent ইত্যাদি) ...
                 // এটি গ্রাফ বা ক্লাস সামারি স্ক্রিনে দেখাবে
                 calculateMonthlyReportModel(
@@ -106,7 +106,7 @@ class AttendanceRepositoryImpl @Inject constructor(
     ): Flow<List<AttendanceEntity>> {
         return attendanceDao.getMonthlyAttendanceData(month, year).map { allRecords ->
             // সব ডাটা থেকে শুধু ওই ক্লাসের ডাটা ফিল্টার করে দিচ্ছি
-            allRecords.filter { it.className == className }
+            allRecords.filter { it.classCode == className }
         }
     }
 
@@ -125,13 +125,13 @@ class AttendanceRepositoryImpl @Inject constructor(
         val absent = total - present
 
         // ২. ছেলেদের হিসাব
-        val bTotal = records.count { it.gender == GenderTypes.MALE.code }
-        val bPresent = records.count { it.gender == GenderTypes.MALE.code && it.status == "Present" }
+        val bTotal = records.count { it.genderCode == GenderTypes.MALE.code }
+        val bPresent = records.count { it.genderCode == GenderTypes.MALE.code && it.status == "Present" }
         val bAbsent = bTotal - bPresent
 
         // ৩. মেয়েদের হিসাব
-        val gTotal = records.count { it.gender == GenderTypes.FEMALE.code }
-        val gPresent = records.count { it.gender == GenderTypes.FEMALE.code && it.status == "Present" }
+        val gTotal = records.count { it.genderCode == GenderTypes.FEMALE.code }
+        val gPresent = records.count { it.genderCode == GenderTypes.FEMALE.code && it.status == "Present" }
         val gAbsent = gTotal - gPresent
 
         // ৪. উপস্থিতির হার

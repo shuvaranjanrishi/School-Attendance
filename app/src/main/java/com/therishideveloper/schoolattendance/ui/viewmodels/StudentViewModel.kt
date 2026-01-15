@@ -141,7 +141,7 @@ class StudentViewModel @Inject constructor(
         viewModelScope.launch {
             _isPdfGenerating.value = true
             val result = withContext(Dispatchers.IO) {
-                pdfGenerator.downloadStudentPdf(student)
+                pdfGenerator.downloadStudentProfilePdf(student)
             }
             _isPdfGenerating.value = false
 

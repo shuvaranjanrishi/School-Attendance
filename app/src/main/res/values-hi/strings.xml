@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">School Attendance</string>
 
+    <string name="label_developer">डेवलपर</string>
+    <string name="dev_name">द ऋषि डेवलपर</string>
+    <string name="dev_author_name">शुभ रंजन ऋषि</string>
+    <string name="dev_email">therishideveloper@gmail.com</string>
+    <string name="dev_copy_rights">© सर्वाधिकार सुरक्षित</string>
+
     <string name="menu">मेनू</string>
     <string name="student_list">विद्यार्थी सूची</string>
     <string name="search_hint">नाम या रोल से खोजें…</string>
@@ -149,9 +155,6 @@
     <string name="pdf_label_address">पता: </string>
     <string name="pdf_label_country">देश: </string>
     <string name="pdf_label_admission_date">नामांकन तिथि: </string>
-    <string name="pdf_footer_brand_name">द ऋषि डेवलपर</string>
-    <string name="pdf_footer_dev_label">डेवलपर: शुभ रंजन ऋषि</string>
-    <string name="pdf_footer_rights">© सर्वाधिकार सुरक्षित</string>
     <string name="pdf_save_success">PDF सहेजा गया: Downloads/School Attendance/Profiles</string>
     <string name="pdf_save_failed">PDF सहेजने में विफल। कृपया पुन: प्रयास करें।</string>
     <string name="pdf_creating_msg">PDF फाइल बनाई जा रही है…</string>
@@ -225,9 +228,6 @@
 
     <string name="label_version">वर्जन</string>
     <string name="about_app_desc">यह एक आधुनिक स्कूल उपस्थिति प्रबंधन ऐप है, जिसे शिक्षकों के काम को आसान और डिजिटल बनाने के लिए डिज़ाइन किया गया है।</string>
-    <string name="developer">डेवलपर</string>
-    <string name="dev_name">The Rishi Developer</string>
-    <string name="dev_email">therishideveloper@gmail.com</string>
     <string name="contact_us">संपर्क करें</string>
     <string name="privacy_policy">गोपनीयता नीति</string>
     <string name="email_subject">स्कूल उपस्थिति ऐप के बारे में पूछताछ</string>
@@ -331,7 +331,7 @@
     <string name="yearly_attendance">वार्षिक उपस्थिति</string>
     <string name="attendance_rate">उपस्थिति दर</string>
 
-    <string name="reports">रिपोर्ट</string>
+    <string name="label_report">रिपोर्ट</string>
     <string name="monthly_attendance_report">मासिक उपस्थिति रिपोर्ट</string>
     <string name="monthly_report_title">मासिक रिपोर्ट</string>
     <string name="total">कुल</string>
@@ -352,10 +352,14 @@
     <string name="month_11">নভেম্বর</string>
     <string name="month_12">दिसंबर</string>
 
+    <string name="label_name">नाम</string>
     <string name="attendance_calender">हाज़िरी कैलेंडर</string>
     <string name="download_pdf">PDF डाउनलोड करें</string>
     <string name="share_pdf">PDF शेयर करें</string>
     <string name="no_records_found">कोई रिकॉर्ड नहीं मिला</string>
     <string name="total_days">कुल दिन</string>
     <string name="no_class">छुट्टी / कोई क्लास नहीं</string>
+    <string name="generated_on">तैयार किया गया</string>
+    <string name="student_report">छात्र रिपोर्ट</string>
+    <string name="hint_search_student">नाम या रोल द्वारा खोजें…</string>
 </resources>

@@ -123,7 +123,7 @@ fun AppNavHost(
             ClassWiseDetailsReportScreen(
                 onBack = { navController.popBackStack() },
                 viewModel = reportViewModel,
-                className = className,
+                classCode = className,
                 month = month,
                 year = year
             )

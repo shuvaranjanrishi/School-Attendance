@@ -151,7 +151,7 @@ private fun TableHeaderCell(text: String, modifier: Modifier, color: Color) {
     Text(
         text = text,
         modifier = modifier,
-        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+        textAlign = TextAlign.Center,
         fontSize = 11.sp,
         fontWeight = FontWeight.ExtraBold,
         color = color
@@ -171,9 +171,21 @@ fun GenderDataRow(label: String, t: Int, p: Int, a: Int, isBold: Boolean = false
             fontWeight = if (isBold) FontWeight.ExtraBold else FontWeight.Medium,
             color = if (isBold) MaterialTheme.colorScheme.onSurface else Color.Gray
         )
-        DataValueCell(text = t.toString(), modifier = Modifier.weight(0.23f), isBold = isBold)
-        DataValueCell(text = p.toString(), modifier = Modifier.weight(0.23f), isBold = isBold)
-        DataValueCell(text = a.toString(), modifier = Modifier.weight(0.23f), isBold = isBold)
+        DataValueCell(
+            text = t.toString().localizeDigitsAndLabels(),
+            modifier = Modifier.weight(0.23f),
+            isBold = isBold
+        )
+        DataValueCell(
+            text = p.toString().localizeDigitsAndLabels(),
+            modifier = Modifier.weight(0.23f),
+            isBold = isBold
+        )
+        DataValueCell(
+            text = a.toString().localizeDigitsAndLabels(),
+            modifier = Modifier.weight(0.23f),
+            isBold = isBold
+        )
     }
 }
 
@@ -208,10 +220,10 @@ fun AttendanceTable(attendanceData: List<AttendanceEntity>) {
     Column(modifier = Modifier.fillMaxSize()) {
         // টেবিল হেডার
         Row(modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant)) {
-            TableCell(text = "Student Name", width = 120.dp, isHeader = true)
+            TableCell(text = stringResource(R.string.label_name), width = 120.dp, isHeader = true)
             Row(modifier = Modifier.horizontalScroll(scrollState)) {
                 days.forEach { day ->
-                    TableCell(text = day.toString(), width = 35.dp, isHeader = true)
+                    TableCell(text = day.toString().localizeDigitsAndLabels(), width = 35.dp, isHeader = true)
                 }
             }
         }
@@ -257,7 +269,7 @@ fun TableCell(text: String, width: androidx.compose.ui.unit.Dp, isHeader: Boolea
         fontWeight = if (isHeader) FontWeight.Bold else FontWeight.Normal,
         fontSize = 12.sp,
         maxLines = 1,
-        textAlign = if (isHeader) TextAlign.Center else TextAlign.Start
+        textAlign = TextAlign.Center
     )
 }
 
@@ -289,7 +301,7 @@ fun EmptyStateMessage() {
 
 @Composable
 fun ReportDownloadDialog(
-    className: String,
+    classCode: String,
     date: String,
     isExcel: Boolean,
     onConfirm: () -> Unit,
@@ -301,7 +313,7 @@ fun ReportDownloadDialog(
         text = {
             Column {
                 val format = if (isExcel) "Excel" else "PDF"
-                Text(stringResource(R.string.download_confirm_msg, "$className ($date) [$format]"))
+                Text(stringResource(R.string.download_confirm_msg, "$classCode ($date) [$format]"))
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = stringResource(R.string.file_location_msg),
@@ -328,7 +340,11 @@ fun AttendanceCalendarGrid(records: List<AttendanceEntity>) {
     Column {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
             listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat").forEach { day ->
-                Text(text = day.localizeDigitsAndLabels(), fontWeight = FontWeight.Bold, color = Color.Gray)
+                Text(
+                    text = day.localizeDigitsAndLabels(),
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Gray
+                )
             }
         }
         Spacer(modifier = Modifier.height(12.dp))
@@ -378,9 +394,11 @@ fun DayCircle(day: Int, status: String?) {
 @Composable
 fun LegendItem(label: String, color: Color) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Box(modifier = Modifier
-            .size(10.dp)
-            .background(color, CircleShape))
+        Box(
+            modifier = Modifier
+                .size(10.dp)
+                .background(color, CircleShape)
+        )
         Spacer(modifier = Modifier.width(6.dp))
         Text(text = label, fontSize = 12.sp, color = Color.Gray)
     }

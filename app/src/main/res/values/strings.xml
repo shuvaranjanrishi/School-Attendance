@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">School Attendance</string>
 
+    <string name="label_developer">Developer</string>
+    <string name="dev_name">The Rishi Developer</string>
+    <string name="dev_author_name">Shuva Ranjan Rishi</string>
+    <string name="dev_email">therishideveloper@gmail.com</string>
+    <string name="dev_copy_rights">© All Rights Reserved</string>
+
     <string name="menu">Menu</string>
     <string name="student_list">Student List</string>
     <string name="search_hint">Search by name or roll…</string>
@@ -148,9 +154,6 @@
     <string name="pdf_label_address">Address: </string>
     <string name="pdf_label_country">Country: </string>
     <string name="pdf_label_admission_date">Admission Date: </string>
-    <string name="pdf_footer_brand_name">The Rishi Developer</string>
-    <string name="pdf_footer_dev_label">Developer: Shuva Ranjan Rishi</string>
-    <string name="pdf_footer_rights">© All Rights Reserved</string>
     <string name="pdf_creating_msg">Creating PDF file…</string>
     <string name="pdf_save_success">PDF Saved: Downloads/School Attendance/Profiles</string>
     <string name="pdf_save_failed">Failed to save PDF. Please try again.</string>
@@ -224,9 +227,6 @@
 
     <string name="label_version">Version</string>
     <string name="about_app_desc">This is a modern school attendance management app, designed to make teacher\'s work easier and digital.</string>
-    <string name="developer">Developer</string>
-    <string name="dev_name">The Rishi Developer</string>
-    <string name="dev_email">therishideveloper@gmail.com</string>
     <string name="contact_us">Contact Us</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="email_subject">Query regarding School Attendance App</string>
@@ -330,7 +330,7 @@
     <string name="yearly_attendance">Yearly Attendance</string>
     <string name="attendance_rate">Attendance Rate</string>
 
-    <string name="reports">Reports</string>
+    <string name="label_report">Reports</string>
     <string name="monthly_report_title">Monthly Report</string>
     <string name="monthly_attendance_report">Monthly Attendance Report</string>
     <string name="total">Total</string>
@@ -352,10 +352,14 @@
     <string name="month_11">November</string>
     <string name="month_12">December</string>
 
+    <string name="label_name">Name</string>
     <string name="attendance_calender">Attendance Calender</string>
     <string name="download_pdf">Download PDF</string>
     <string name="share_pdf">Share PDF</string>
     <string name="no_records_found">No Records Found</string>
     <string name="total_days">Total Days</string>
     <string name="no_class">No Class</string>
+    <string name="generated_on">Generated On</string>
+    <string name="student_report">Student Report</string>
+    <string name="hint_search_student">Search by name or roll…</string>
 </resources>

@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">School Attendance</string>
 
+    <string name="label_developer">ডেভেলপার</string>
+    <string name="dev_name">দি ঋষি ডেভেলপার</string>
+    <string name="dev_author_name">শুভ রঞ্জন ঋষি</string>
+    <string name="dev_email">therishideveloper@gmail.com</string>
+    <string name="dev_copy_rights">© সর্বস্বত্ব সংরক্ষিত</string>
+
     <string name="menu">মেনু</string>
     <string name="student_list">শিক্ষার্থী তালিকা</string>
     <string name="search_hint">নাম বা রোল দিয়ে খুঁজুন…</string>
@@ -149,9 +155,6 @@
     <string name="pdf_label_address">ঠিকানা: </string>
     <string name="pdf_label_country">দেশ: </string>
     <string name="pdf_label_admission_date">ভর্তির তারিখ: </string>
-    <string name="pdf_footer_brand_name">দি ঋষি ডেভেলপার</string>
-    <string name="pdf_footer_dev_label">ডেভেলপার: শুভ রঞ্জন ঋষি</string>
-    <string name="pdf_footer_rights">© সর্বস্বত্ব সংরক্ষিত</string>
     <string name="pdf_save_success">PDF সেভ হয়েছে: Downloads/School Attendance/Profiles</string>
     <string name="pdf_save_failed">PDF সেভ করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।</string>
     <string name="pdf_creating_msg">PDF ফাইল তৈরি হচ্ছে…</string>
@@ -225,9 +228,6 @@
 
     <string name="label_version">ভার্সন</string>
     <string name="about_app_desc">এটি একটি আধুনিক স্কুল হাজিরা ম্যানেজমেন্ট অ্যাপ, যা শিক্ষকদের কাজকে সহজ ও ডিজিটাল করতে তৈরি করা হয়েছে।</string>
-    <string name="developer">Developer</string>
-    <string name="dev_name">The Rishi Developer</string>
-    <string name="dev_email">therishideveloper@gmail.com</string>
     <string name="contact_us">যোগাযোগ করুন</string>
     <string name="privacy_policy">প্রাইভেসি পলিসি</string>
     <string name="email_subject">স্কুল হাজিরা অ্যাপ সম্পর্কিত জিজ্ঞাসা</string>
@@ -331,7 +331,7 @@
     <string name="yearly_attendance">বার্ষিক উপস্থিতি</string>
     <string name="attendance_rate">উপস্থিতি হার</string>
 
-    <string name="reports">Reports</string>
+    <string name="label_report">রিপোর্ট</string>
     <string name="monthly_report_title">মাসিক রিপোর্ট</string>
     <string name="monthly_attendance_report">মাসিক হাজিরা রিপোর্ট</string>
     <string name="total">মোট</string>
@@ -353,10 +353,14 @@
     <string name="month_11">নভেম্বর</string>
     <string name="month_12">ডিসেম্বর</string>
 
+    <string name="label_name">নাম</string>
     <string name="attendance_calender">হাজিরা ক্যালেন্ডার</string>
     <string name="download_pdf">PDF ডাউনলোড</string>
     <string name="share_pdf">PDF শেয়ার করুন</string>
     <string name="no_records_found">কোন রেকর্ড পাওয়া যায়নি</string>
     <string name="total_days">মোট দিন</string>
     <string name="no_class">ছুটি/ক্লাস নেই</string>
+    <string name="generated_on">তৈরির সময়</string>
+    <string name="student_report">ছাত্র প্রতিবেদন</string>
+    <string name="hint_search_student">নাম বা রোল দিয়ে খুঁজুন…</string>
 </resources>

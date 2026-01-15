@@ -26,9 +26,9 @@ sealed class Screen(val route: String, val resId: Int, val icon: ImageVector) {
         fun createRoute(className: String) = "attendance?className=$className"
     }
     object Students : Screen("students", R.string.student_list, Icons.Default.People)
-    object ReportsSummeryClassWiseScreen : Screen("monthly_class_reports", R.string.reports, Icons.Default.Assessment)
-    object ReportTypeSelectionScreen : Screen("report_type_selection", R.string.reports, Icons.Default.Assessment)
-    object ReportsSummaryStudentWiseScreen : Screen("monthly_student_reports", R.string.reports, Icons.Default.Assessment)
+    object ReportsSummeryClassWiseScreen : Screen("monthly_class_reports", R.string.label_report, Icons.Default.Assessment)
+    object ReportTypeSelectionScreen : Screen("report_type_selection", R.string.label_report, Icons.Default.Assessment)
+    object ReportsSummaryStudentWiseScreen : Screen("monthly_student_reports", R.string.label_report, Icons.Default.Assessment)
     object Settings : Screen("settings", R.string.settings, Icons.Default.Settings)
     object UserProfile : Screen("user_profile", R.string.profile, Icons.Default.AccountBox)
     object SchoolProfile : Screen("school_profile", R.string.school_profile_settings, Icons.Default.School)
@@ -42,7 +42,7 @@ sealed class Screen(val route: String, val resId: Int, val icon: ImageVector) {
     }
     object ClassWiseDetailsReportScreen : Screen(
         route = "class_wise_details_report/{className}/{month}/{year}",
-        resId = R.string.reports, // অথবা ০ যদি স্ট্রিং না থাকে
+        resId = R.string.label_report, // অথবা ০ যদি স্ট্রিং না থাকে
         icon = Icons.Default.Assessment
     ) {
         fun createRoute(className: String, month: String, year: String) =
@@ -50,7 +50,7 @@ sealed class Screen(val route: String, val resId: Int, val icon: ImageVector) {
     }
     object MonthlyReportDetailsCalendar : Screen(
         route = "monthly_report_details_calendar/{studentId}",
-        resId = R.string.reports, // বা উপযুক্ত কোনো স্ট্রিং
+        resId = R.string.label_report, // বা উপযুক্ত কোনো স্ট্রিং
         icon = Icons.Default.Assessment
     ) {
         fun createRoute(studentId: Int) = "monthly_report_details_calendar/$studentId"

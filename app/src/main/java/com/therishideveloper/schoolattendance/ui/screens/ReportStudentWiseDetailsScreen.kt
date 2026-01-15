@@ -45,7 +45,6 @@ fun ReportStudentWiseDetailsScreen(
 
     val displayDate = remember(month, year) { getFormattedDate(month, year) }
 
-    // ViewModel থেকে হিসাব করা ডাটা নিয়ে আসা
     val (studentSummary, counts) = remember(attendanceRecords, studentId) {
         viewModel.getStudentDetails(studentId, attendanceRecords)
     }
@@ -53,8 +52,8 @@ fun ReportStudentWiseDetailsScreen(
     val specificStudentRecords = remember(attendanceRecords, studentId) {
         attendanceRecords.filter { it.studentId == studentId }
     }
-    val classType = remember(studentSummary?.className) {
-        ClassTypes.fromCode(studentSummary?.className ?: "")
+    val classType = remember(studentSummary?.classCode) {
+        ClassTypes.fromCode(studentSummary?.classCode ?: "")
     }
     val readableClassName = stringResource(id = classType.stringRes).replace(
         "Class",
@@ -66,7 +65,11 @@ fun ReportStudentWiseDetailsScreen(
             TopAppBar(
                 title = {
                     Column {
-                        Text(stringResource(R.string.attendance_calender), fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        Text(
+                            stringResource(R.string.attendance_calender),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                         Text(displayDate, fontSize = 12.sp, color = Color.White.copy(alpha = 0.8f))
                     }
                 },
@@ -90,10 +93,10 @@ fun ReportStudentWiseDetailsScreen(
                         Button(
                             onClick = {
                                 viewModel.downloadStudentCalendarPdf(
-                                    summary.copy(className = readableClassName),
-                                        displayDate,
-                                        specificStudentRecords
-                                    )
+                                    summary.copy(classCode = readableClassName),
+                                    displayDate,
+                                    specificStudentRecords
+                                )
                             },
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(12.dp)
@@ -107,7 +110,7 @@ fun ReportStudentWiseDetailsScreen(
                         OutlinedButton(
                             onClick = {
                                 viewModel.shareStudentCalendarPdf(
-                                    summary.copy(className = readableClassName),
+                                    summary.copy(classCode = readableClassName),
                                     displayDate,
                                     specificStudentRecords
                                 )
@@ -154,7 +157,7 @@ fun ReportStudentWiseDetailsScreen(
                         Spacer(modifier = Modifier.height(4.dp))
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                text =  stringResource(R.string.label_roll)+": ${studentSummary?.rollNo?.localizeDigitsAndLabels()}",
+                                text = stringResource(R.string.label_roll) + ": ${studentSummary?.rollNo?.localizeDigitsAndLabels()}",
                                 color = Color.Gray,
                                 fontSize = 14.sp
                             )
@@ -165,9 +168,8 @@ fun ReportStudentWiseDetailsScreen(
                                     .background(Color.LightGray, CircleShape)
                             )
 
-                            // ৩. এখানে stringResource ব্যবহার করা হয়েছে
                             Text(
-                                text = stringResource(R.string.label_class)+": $readableClassName",
+                                text = stringResource(R.string.label_class) + ": $readableClassName",
                                 color = Color.Gray,
                                 fontSize = 14.sp
                             )
@@ -223,11 +225,20 @@ fun ReportStudentWiseDetailsScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Start
                     ) {
-                        LegendItem(label = stringResource(R.string.present), color = Color(0xFF2E7D32))
+                        LegendItem(
+                            label = stringResource(R.string.present),
+                            color = Color(0xFF2E7D32)
+                        )
                         Spacer(modifier = Modifier.width(16.dp))
-                        LegendItem(label = stringResource(R.string.absent), color = Color(0xFFD32F2F))
+                        LegendItem(
+                            label = stringResource(R.string.absent),
+                            color = Color(0xFFD32F2F)
+                        )
                         Spacer(modifier = Modifier.width(16.dp))
-                        LegendItem(label = stringResource(R.string.no_class), color = Color.LightGray)
+                        LegendItem(
+                            label = stringResource(R.string.no_class),
+                            color = Color.LightGray
+                        )
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -236,7 +247,10 @@ fun ReportStudentWiseDetailsScreen(
             }
 
             if (isDownloading) {
-                LoadingOverlay(isLoading = true, message = stringResource(R.string.pdf_creating_msg))
+                LoadingOverlay(
+                    isLoading = true,
+                    message = stringResource(R.string.pdf_creating_msg)
+                )
             }
         }
     }

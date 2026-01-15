@@ -66,7 +66,7 @@ class StudentFormState(student: StudentEntity?) {
     var name by mutableStateOf(student?.name ?: "")
     var roll by mutableStateOf(student?.rollNo ?: "")
     var sClass by mutableStateOf(
-        student?.className ?: ClassTypes.PLAY.code
+        student?.classCode ?: ClassTypes.PLAY.code
     )
     var sCountry by mutableStateOf(student?.country ?: CountryTypes.BANGLADESH.code)
     var fatherName by mutableStateOf(student?.fatherName ?: "")
@@ -74,10 +74,10 @@ class StudentFormState(student: StudentEntity?) {
     var address by mutableStateOf(student?.address ?: "")
     var selectedImage by mutableStateOf(student?.image)
     var gender by mutableStateOf(
-        student?.gender ?: GenderTypes.MALE.code
+        student?.genderCode ?: GenderTypes.MALE.code
     )
     var religion by mutableStateOf(
-        student?.religion ?: ReligionTypes.ISLAM.code
+        student?.religionCode ?: ReligionTypes.ISLAM.code
     )
     var bloodGroup by mutableStateOf(
         student?.bloodGroup ?: BloodGroupTypes.UNKNOWN.code
@@ -340,7 +340,7 @@ fun FormActions(
 
                         if (existingStudent != null && existingStudent.id != (student?.id ?: 0)) {
                             state.duplicateName = existingStudent.name
-                            state.duplicateGender = existingStudent.gender
+                            state.duplicateGender = existingStudent.genderCode
                             state.showDuplicateDialog = true
                         } else {
                             // Saving student data
@@ -353,12 +353,12 @@ fun FormActions(
                                     age = state.age,
                                     nidOrBirthReg = state.nidOrBirthReg,
                                     idType = state.idType,
-                                    className = state.sClass,
+                                    classCode = state.sClass,
                                     fatherName = state.fatherName,
                                     motherName = state.motherName,
                                     phone = "$code${state.phone}",
-                                    gender = state.gender,
-                                    religion = state.religion,
+                                    genderCode = state.gender,
+                                    religionCode = state.religion,
                                     bloodGroup = state.bloodGroup,
                                     address = state.address,
                                     country = state.sCountry,

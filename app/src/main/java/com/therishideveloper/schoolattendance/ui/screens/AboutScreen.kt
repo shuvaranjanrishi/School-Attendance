@@ -77,16 +77,16 @@ fun AboutScreen() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = stringResource(R.string.pdf_footer_brand_name),
+                        text = stringResource(R.string.dev_name),
                         style = MaterialTheme.typography.titleMedium
                     )
                     Text(
-                        text = stringResource(R.string.pdf_footer_dev_label),
+                        text = stringResource(R.string.label_developer),
                         style = MaterialTheme.typography.labelLarge,
                         color = greyColor
                     )
                     Text(
-                        text = stringResource(R.string.pdf_footer_rights),
+                        text = stringResource(R.string.dev_copy_rights),
                         style = MaterialTheme.typography.labelLarge,
                         color = greyColor
                     )

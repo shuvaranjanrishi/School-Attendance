@@ -65,13 +65,13 @@ class ReportViewModel @Inject constructor(
                 studentId = id,
                 name = first.studentName,
                 rollNo = first.rollNo,
-                className = first.className,
+                classCode = first.classCode,
                 totalDays = total,
                 presentCount = present,
                 absentCount = total - present,
                 attendancePercentage = percentage
             )
-        }.sortedWith(compareBy({ it.className }, { it.rollNo.toIntOrNull() ?: 0 }))
+        }.sortedWith(compareBy({ it.classCode }, { it.rollNo.toIntOrNull() ?: 0 }))
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     // ৪. ফিল্টার করা স্টুডেন্ট লিস্ট (UI তে দেখানোর জন্য)
@@ -82,7 +82,7 @@ class ReportViewModel @Inject constructor(
         _selectedClassFilter
     ) { summaries, query, cls ->
         summaries.filter { student ->
-            val matchesClass = if (cls == "All") true else student.className == cls
+            val matchesClass = if (cls == "All") true else student.classCode == cls
             val matchesQuery = student.name.contains(query, ignoreCase = true) ||
                     student.rollNo.contains(query)
             matchesClass && matchesQuery
@@ -105,16 +105,15 @@ class ReportViewModel @Inject constructor(
         // flatMapLatest এর কারণে ডাটা অটোমেটিক লোড হবে
     }
 
-    // ৫. পিডিএফ ও এক্সেল জেনারেশন (ClassName প্যারামিটার সহ)
-    fun generateMonthlyReportPdf(className: String, displayDate: String) {
+    fun generateMonthlyReportPdf(classCode: String, displayDate: String) {
         val records =
-            detailedRecords.value.filter { it.className == className || className == "All" || className == "All Classes" }
+            detailedRecords.value.filter { it.classCode == classCode || classCode == "All" || classCode == "All Classes" }
         if (records.isEmpty()) return
 
         viewModelScope.launch {
             _isDownloading.value = true
             withContext(Dispatchers.IO) {
-                pdfGenerator.downloadMonthlyReportPdf(className, displayDate, records)
+                pdfGenerator.generateMonthlyAttendanceReport(classCode, displayDate, records)
             }
             _isDownloading.value = false
         }
@@ -122,7 +121,7 @@ class ReportViewModel @Inject constructor(
 
     fun generateMonthlyReportExcel(className: String, displayDate: String) {
         val records =
-            detailedRecords.value.filter { it.className == className || className == "All" || className == "All Classes" }
+            detailedRecords.value.filter { it.classCode == className || className == "All" || className == "All Classes" }
         if (records.isEmpty()) return
 
         viewModelScope.launch {
@@ -143,9 +142,9 @@ class ReportViewModel @Inject constructor(
         viewModelScope.launch {
             _isDownloading.value = true
             withContext(Dispatchers.IO) {
-                pdfGenerator.createStudentMonthlyDetailsReport(
+                pdfGenerator.generateStudentMonthlyDetailsReport(
                     studentName = summary.name,
-                    className = summary.className,
+                    className = summary.classCode,
                     monthYear = displayDate,
                     rollNo = summary.rollNo,
                     total = summary.totalDays,
@@ -169,14 +168,21 @@ class ReportViewModel @Inject constructor(
         viewModelScope.launch {
             _isDownloading.value = true
             val result = withContext(Dispatchers.IO) {
-                pdfGenerator.createStudentMonthlyDetailsReport(
-                    summary.name, summary.className, displayDate, summary.rollNo,
-                    summary.totalDays, summary.presentCount, summary.absentCount,
-                    summary.attendancePercentage, records, isSharing = true
+                pdfGenerator.generateStudentMonthlyDetailsReport(
+                    studentName = summary.name,
+                    className = summary.classCode,
+                    monthYear = displayDate,
+                    rollNo = summary.rollNo,
+                    total = summary.totalDays,
+                    present = summary.presentCount,
+                    absent = summary.absentCount,
+                    percent = summary.attendancePercentage,
+                    records = records,
+                    isSharing = true
                 )
             }
             if (result is Result.Success) {
-                withContext(Dispatchers.Main) { pdfGenerator.shareFile(result.data) }
+                withContext(Dispatchers.Main) { pdfGenerator.sharePdfFile(result.data) }
             }
             _isDownloading.value = false
         }
@@ -199,7 +205,7 @@ class ReportViewModel @Inject constructor(
                 studentId = studentId,
                 name = it.studentName,
                 rollNo = it.rollNo,
-                className = it.className,
+                classCode = it.classCode,
                 totalDays = total,
                 presentCount = present,
                 absentCount = absent,

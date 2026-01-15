@@ -18,7 +18,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,6 +32,7 @@ import com.therishideveloper.schoolattendance.ui.viewmodels.ReportViewModel
 import com.therishideveloper.schoolattendance.utils.ClassTypes
 import com.therishideveloper.schoolattendance.utils.Constants
 import com.therishideveloper.schoolattendance.utils.DateUtils.getFormattedDate
+import com.therishideveloper.schoolattendance.utils.localizeDigitsAndLabels
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,7 +56,11 @@ fun ReportSummaryStudentWiseScreen(
             TopAppBar(
                 title = {
                     Column {
-                        Text("Student Reports", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        Text(
+                            stringResource(R.string.student_report),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                         Text(displayDate, fontSize = 12.sp, color = Color.White.copy(alpha = 0.8f))
                     }
                 },
@@ -66,7 +70,6 @@ fun ReportSummaryStudentWiseScreen(
                     }
                 },
                 actions = {
-                    // তারিখ পরিবর্তনের বাটন এখন কার্যকরী
                     IconButton(onClick = { showMonthPicker = true }) {
                         Icon(Icons.Filled.DateRange, contentDescription = null, tint = Color.White)
                     }
@@ -92,7 +95,7 @@ fun ReportSummaryStudentWiseScreen(
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = { viewModel.onSearch(it) },
-                    placeholder = { Text("Search by name or roll...") },
+                    placeholder = { Text(stringResource(R.string.hint_search_student)) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     singleLine = true,
@@ -170,10 +173,17 @@ fun MonthYearPickerDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = stringResource(R.string.select_month_year), fontWeight = FontWeight.Bold) },
+        title = {
+            Text(
+                text = stringResource(R.string.select_month_year),
+                fontWeight = FontWeight.Bold
+            )
+        },
         text = {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Box(modifier = Modifier.weight(1.3f)) {
@@ -206,7 +216,6 @@ fun MonthYearPickerDialog(
         }
     )
 }
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -261,8 +270,8 @@ fun ScrollablePicker(
 fun StudentReportCard(
     summary: StudentMonthlySummary, onClick: () -> Unit
 ) {
-    val classType = remember(summary.className) {
-        ClassTypes.fromCode(summary.className)
+    val classType = remember(summary.classCode) {
+        ClassTypes.fromCode(summary.classCode)
     }
 
     Card(
@@ -297,7 +306,9 @@ fun StudentReportCard(
             }
 
             Text(
-                text = "Roll: ${summary.rollNo}  •  Class: ${
+                text = stringResource(R.string.label_roll) + ": ${summary.rollNo.localizeDigitsAndLabels()}  •  " + stringResource(
+                    R.string.label_class
+                ) + ": ${
                     stringResource(id = classType.stringRes).replace(
                         "Class", ""
                     )
@@ -313,18 +324,18 @@ fun StudentReportCard(
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     StatusRow(
-                        label = "Total Days",
-                        value = summary.totalDays.toString(),
+                        label = stringResource(R.string.total_days),
+                        value = summary.totalDays.toString().localizeDigitsAndLabels(),
                         color = Color.Gray
                     )
                     StatusRow(
-                        label = "Present",
-                        value = summary.presentCount.toString(),
+                        label = stringResource(R.string.present),
+                        value = summary.presentCount.toString().localizeDigitsAndLabels(),
                         color = Color(0xFF2E7D32)
                     )
                     StatusRow(
-                        label = "Absent",
-                        value = summary.absentCount.toString(),
+                        label = stringResource(R.string.absent),
+                        value = summary.absentCount.toString().localizeDigitsAndLabels(),
                         color = Color(0xFFD32F2F)
                     )
                 }
