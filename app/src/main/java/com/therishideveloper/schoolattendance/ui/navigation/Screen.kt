@@ -25,13 +25,30 @@ sealed class Screen(val route: String, val resId: Int, val icon: ImageVector) {
     ) {
         fun createRoute(classCode: String) = "attendance?classCode=$classCode"
     }
+
+    object AddStudentFormScreen : Screen(
+        "add_student_form?studentId={studentId}",
+        R.string.admit_new_student,
+        Icons.Default.People
+    ) {
+        fun createRoute(id: Int = -1) = "add_student_form?studentId=$id"
+    }
+
     object Students : Screen("students", R.string.student_list, Icons.Default.People)
-    object ReportsSummeryClassWiseScreen : Screen("monthly_class_reports", R.string.label_report, Icons.Default.Assessment)
-    object ReportTypeSelectionScreen : Screen("report_type_selection", R.string.label_report, Icons.Default.Assessment)
-    object ReportsSummaryStudentWiseScreen : Screen("monthly_student_reports", R.string.label_report, Icons.Default.Assessment)
+    object ReportsSummeryClassWiseScreen :
+        Screen("monthly_class_reports", R.string.label_report, Icons.Default.Assessment)
+
+    object ReportTypeSelectionScreen :
+        Screen("report_type_selection", R.string.label_report, Icons.Default.Assessment)
+
+    object ReportsSummaryStudentWiseScreen :
+        Screen("monthly_student_reports", R.string.label_report, Icons.Default.Assessment)
+
     object Settings : Screen("settings", R.string.settings, Icons.Default.Settings)
     object UserProfile : Screen("user_profile", R.string.profile, Icons.Default.AccountBox)
-    object SchoolProfile : Screen("school_profile", R.string.school_profile_settings, Icons.Default.School)
+    object SchoolProfile :
+        Screen("school_profile", R.string.school_profile_settings, Icons.Default.School)
+
     object About : Screen("about", R.string.about, Icons.Default.Info)
     object ShareApp : Screen("share_app", R.string.share_app, Icons.Default.Share)
     object MoreApps : Screen("more_apps", R.string.more_apps, Icons.AutoMirrored.Filled.OpenInNew)
@@ -40,6 +57,7 @@ sealed class Screen(val route: String, val resId: Int, val icon: ImageVector) {
         Screen("student_details_screen/{studentId}", 0, Icons.Default.People) {
         fun createRoute(id: Int) = "student_details_screen/$id"
     }
+
     object ClassWiseDetailsReportScreen : Screen(
         route = "class_wise_details_report/{classCode}/{month}/{year}",
         resId = R.string.label_report, // অথবা ০ যদি স্ট্রিং না থাকে
@@ -48,6 +66,7 @@ sealed class Screen(val route: String, val resId: Int, val icon: ImageVector) {
         fun createRoute(classCode: String, month: String, year: String) =
             "class_wise_details_report/$classCode/$month/$year"
     }
+
     object MonthlyReportDetailsCalendar : Screen(
         route = "monthly_report_details_calendar/{studentId}",
         resId = R.string.label_report, // বা উপযুক্ত কোনো স্ট্রিং

@@ -12,6 +12,9 @@ import com.therishideveloper.schoolattendance.ui.screens.*
 import com.therishideveloper.schoolattendance.ui.viewmodels.*
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue // এটি অবশ্যই থাকতে হবে
+import com.therishideveloper.schoolattendance.data.local.entity.StudentEntity
+import com.therishideveloper.schoolattendance.utils.Result
+
 
 @Composable
 fun AppNavHost(
@@ -66,12 +69,47 @@ fun AppNavHost(
                 )
             }
         }
+
+        // --- 1. Student List Screen ---
         composable(Screen.Students.route) {
             StudentListScreen(
                 viewModel = studentViewModel,
                 onMenuClick = onMenuClick,
                 onStudentClick = { id ->
                     navController.navigate(Screen.StudentDetailScreen.createRoute(id))
+                },
+                onAddStudentClick = {
+                    navController.navigate(Screen.AddStudentFormScreen.createRoute(-1))
+                }
+            )
+        }
+
+        // --- 2. Add/Edit Student Form Screen ---
+        composable(
+            route = Screen.AddStudentFormScreen.route,
+            arguments = listOf(
+                navArgument("studentId") {
+                    type = NavType.IntType
+                    defaultValue = -1 // English Comment: Default -1 for adding new student
+                }
+            )
+        ) { backStackEntry ->
+            val studentId = backStackEntry.arguments?.getInt("studentId") ?: -1
+            val studentListState by studentViewModel.studentListState.collectAsState()
+            val studentToEdit = if (studentId != -1 && studentListState is Result.Success) {
+                (studentListState as Result.Success<List<StudentEntity>>).data.find { it.id == studentId }
+            } else null
+
+            AddStudentFormScreen(
+                viewModel = studentViewModel,
+                student = studentToEdit,
+                onBack = { navController.popBackStack() },
+                onConfirm = { updatedStudent ->
+                    if (studentId == -1) {
+                        studentViewModel.addStudent(updatedStudent)
+                    } else {
+                        studentViewModel.updateStudent(updatedStudent)
+                    }
                 }
             )
         }
@@ -188,7 +226,7 @@ fun AppNavHost(
 
             ReportStudentWiseDetailsScreen(
                 studentId = studentId,
-                viewModel = reportViewModel, // ভিউমডেল পাস করে দিন
+                viewModel = reportViewModel,
                 onBack = { navController.popBackStack() }
             )
         }

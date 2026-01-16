@@ -25,14 +25,15 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.therishideveloper.schoolattendance.data.local.entity.StudentEntity
 import com.therishideveloper.schoolattendance.ui.components.myTopBarColors
-import com.therishideveloper.schoolattendance.ui.components.StudentFormDialog
+//import com.therishideveloper.schoolattendance.ui.components.StudentFormDialog
 import com.therishideveloper.schoolattendance.ui.viewmodels.StudentViewModel
 import com.therishideveloper.schoolattendance.utils.Result
 import androidx.core.net.toUri
 import com.therishideveloper.schoolattendance.R
 import com.therishideveloper.schoolattendance.ui.components.LoadingOverlay
-import com.therishideveloper.schoolattendance.ui.components.showToast
+//import com.therishideveloper.schoolattendance.ui.components.showToast
 import com.therishideveloper.schoolattendance.ui.event.UiEvent
+import com.therishideveloper.schoolattendance.ui.navigation.Screen
 import com.therishideveloper.schoolattendance.utils.BloodGroupTypes
 import com.therishideveloper.schoolattendance.utils.ClassTypes
 import com.therishideveloper.schoolattendance.utils.CountryTypes
@@ -53,7 +54,6 @@ fun StudentDetailScreen(
     }.collectAsState()
 
     // Dialog States
-    var showEditDialog by remember { mutableStateOf(false) }
     var showDeleteConfirm by remember { mutableStateOf(false) }
     var showCallConfirm by remember { mutableStateOf(false) }
     var showDownloadConfirm by remember { mutableStateOf(false) }
@@ -81,7 +81,7 @@ fun StudentDetailScreen(
                     topBar = {
                         DetailTopBar(
                             onBack = { navController.popBackStack() },
-                            onEdit = { showEditDialog = true },
+                            onEdit = { navController.navigate(Screen.AddStudentFormScreen.createRoute(student.id))},
                             onDownload = { showDownloadConfirm = true }
                         )
                     }
@@ -108,13 +108,13 @@ fun StudentDetailScreen(
                 DetailDialogs(
                     showCall = showCallConfirm,
                     showDelete = showDeleteConfirm,
-                    showEdit = showEditDialog,
+//                    showEdit = showEditDialog,
                     showDownload = showDownloadConfirm,
                     student = student,
                     viewModel = viewModel,
                     onDismissCall = { showCallConfirm = false },
                     onDismissDelete = { showDeleteConfirm = false },
-                    onDismissEdit = { showEditDialog = false },
+//                    onDismissEdit = { showEditDialog = false },
                     onDismissDownload = { showDownloadConfirm = false },
                     navController = navController
                 )
@@ -131,7 +131,7 @@ fun DetailTopBar(
     onDownload: () -> Unit
 ) {
     TopAppBar(
-        title = { Text(stringResource(R.string.profile_details_title)) },
+        title = { Text(stringResource(R.string.profile_details_title),fontWeight = FontWeight.Bold) },
         navigationIcon = {
             IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") }
         },
@@ -368,13 +368,13 @@ fun InfoRow(
 fun DetailDialogs(
     showCall: Boolean,
     showDelete: Boolean,
-    showEdit: Boolean,
+//    showEdit: Boolean,
     showDownload: Boolean,
     student: StudentEntity,
     viewModel: StudentViewModel,
     onDismissCall: () -> Unit,
     onDismissDelete: () -> Unit,
-    onDismissEdit: () -> Unit,
+//    onDismissEdit: () -> Unit,
     onDismissDownload: () -> Unit,
     navController: NavController
 ) {
@@ -454,17 +454,17 @@ fun DetailDialogs(
         )
     }
 
-    if (showEdit) {
-        StudentFormDialog(
-            viewModel = viewModel,
-            student = student,
-            onDismiss = onDismissEdit,
-            onConfirm = { updatedStudent ->
-                viewModel.updateStudent(updatedStudent)
-                onDismissEdit()
-            }
-        )
-    }
+//    if (showEdit) {
+//        StudentFormDialog(
+//            viewModel = viewModel,
+//            student = student,
+//            onDismiss = onDismissEdit,
+//            onConfirm = { updatedStudent ->
+//                viewModel.updateStudent(updatedStudent)
+//                onDismissEdit()
+//            }
+//        )
+//    }
 }
 
 @Composable

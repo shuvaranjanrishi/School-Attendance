@@ -39,7 +39,7 @@ fun HomeScreen(
             TopAppBar(
                 title = {
                     Column(verticalArrangement = Arrangement.spacedBy((-4).dp)) {
-                        Text(stringResource(R.string.dashboard), fontWeight = FontWeight.ExtraBold)
+                        Text(stringResource(R.string.dashboard), fontWeight = FontWeight.Bold)
                         Text(
                             text = displayDate,
                             fontSize = 12.sp,

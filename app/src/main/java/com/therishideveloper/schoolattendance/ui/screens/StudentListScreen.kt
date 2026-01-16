@@ -16,13 +16,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.therishideveloper.schoolattendance.data.local.entity.StudentEntity
 import com.therishideveloper.schoolattendance.ui.components.GenderDropdownFilter
 import com.therishideveloper.schoolattendance.ui.components.GenericFilterRow
 import com.therishideveloper.schoolattendance.ui.components.GenericSearchBar
 import com.therishideveloper.schoolattendance.ui.components.myTopBarColors
-import com.therishideveloper.schoolattendance.ui.components.StudentFormDialog
+//import com.therishideveloper.schoolattendance.ui.components.StudentFormDialog
 import com.therishideveloper.schoolattendance.ui.viewmodels.StudentViewModel
 import com.therishideveloper.schoolattendance.utils.Result
 import com.therishideveloper.schoolattendance.R
@@ -35,7 +36,8 @@ import com.therishideveloper.schoolattendance.utils.GenderTypes
 fun StudentListScreen(
     viewModel: StudentViewModel,
     onMenuClick: () -> Unit,
-    onStudentClick: (Int) -> Unit
+    onStudentClick: (Int) -> Unit,
+    onAddStudentClick: () -> Unit
 ) {
     val searchQuery by viewModel.searchQuery.collectAsState()
     val studentList by viewModel.studentListState.collectAsState()
@@ -43,7 +45,7 @@ fun StudentListScreen(
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val selectedGender by viewModel.selectedGender.collectAsState()
     val selectedClass by viewModel.selectedClass.collectAsState()
-    var showAddDialog by remember { mutableStateOf(false) }
+//    var showAddDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(studentList) {
         if (studentList is Result.Success) {
@@ -54,7 +56,7 @@ fun StudentListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.student_list)) },
+                title = { Text(stringResource(R.string.student_list),fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onMenuClick) {
                         Icon(
@@ -68,7 +70,8 @@ fun StudentListScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { showAddDialog = true },
+                onClick = { onAddStudentClick() },
+//                onClick = { showAddDialog = true },
                 containerColor = MaterialTheme.colorScheme.primary
             ) {
                 Icon(
@@ -172,17 +175,17 @@ fun StudentListScreen(
                 }
             }
         }
-        if (showAddDialog) {
-            StudentFormDialog(
-                viewModel,
-                student = null,
-                onDismiss = { showAddDialog = false },
-                onConfirm = { newStudent ->
-                    viewModel.addStudent(newStudent)
-                    showAddDialog = false
-                }
-            )
-        }
+//        if (showAddDialog) {
+//            StudentFormDialog(
+//                viewModel,
+//                student = null,
+//                onDismiss = { showAddDialog = false },
+//                onConfirm = { newStudent ->
+//                    viewModel.addStudent(newStudent)
+//                    showAddDialog = false
+//                }
+//            )
+//        }
     }
 }
 
