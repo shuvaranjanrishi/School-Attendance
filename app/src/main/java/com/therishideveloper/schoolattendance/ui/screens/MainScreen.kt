@@ -6,6 +6,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -17,6 +18,8 @@ import com.therishideveloper.schoolattendance.ui.viewmodels.ProfileViewModel
 import com.therishideveloper.schoolattendance.utils.AppActions
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import com.therishideveloper.schoolattendance.utils.Result
+import com.therishideveloper.schoolattendance.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,6 +32,9 @@ fun MainScreen() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     var showLogoutDialog by remember { mutableStateOf(false) }
+    val userResult by profileViewModel.userState.collectAsState()
+    val schoolData by profileViewModel.schoolState.collectAsState()
+    val user = (userResult as? Result.Success)?.data
 
     if (showLogoutDialog) {
         AlertDialog(
@@ -69,10 +75,15 @@ fun MainScreen() {
 
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = currentRoute != "student_details_screen/{studentId}", // শুধু ডিটেইলসে অফ থাকবে
+        gesturesEnabled = currentRoute != "student_details_screen/{studentId}",
         drawerContent = {
             ModalDrawerSheet(modifier = Modifier.width(300.dp)) {
-                DrawerHeader()
+                DrawerHeader(
+                    schoolName = schoolData?.name ?: stringResource(R.string.hint_school_name_empty),
+                    schoolAddress = schoolData?.address ?: stringResource(R.string.hint_address_empty),
+                    userName = user?.name ?: stringResource(R.string.hint_teacher_name_empty),
+                    userEmail = user?.email ?: ""
+                )
                 DrawerBody(
                     currentRoute = currentRoute,
                     onItemClick = { screen ->

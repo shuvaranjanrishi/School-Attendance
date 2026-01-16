@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.therishideveloper.schoolattendance.data.local.SettingsManager
 import com.therishideveloper.schoolattendance.data.local.entity.UserEntity
+import com.therishideveloper.schoolattendance.domain.repository.SchoolRepository
 import com.therishideveloper.schoolattendance.domain.repository.UserRepository
 import com.therishideveloper.schoolattendance.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val repository: UserRepository,
+    private val schoolRepo: SchoolRepository,
     private val settingsManager: SettingsManager
 ) : ViewModel() {
 
@@ -26,8 +28,18 @@ class ProfileViewModel @Inject constructor(
     private val _authResult = MutableSharedFlow<Result<Unit>>()
     val authResult = _authResult.asSharedFlow()
 
+    private val _schoolState = MutableStateFlow<com.therishideveloper.schoolattendance.data.local.entity.SchoolEntity?>(null)
+    val schoolState = _schoolState.asStateFlow()
+
     init {
         loadProfileData(showLoading = true)
+        loadSchoolData()
+    }
+
+    private fun loadSchoolData() {
+        viewModelScope.launch {
+            _schoolState.value = schoolRepo.getSchool()
+        }
     }
 
     // Load user profile from database

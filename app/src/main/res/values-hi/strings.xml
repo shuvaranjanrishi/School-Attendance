@@ -202,6 +202,7 @@
     <string name="msg_error_unexpected">अप्रत्याशित त्रुटि हुई</string>
     <string name="hint_school_name_empty">स्कूल का नाम प्रदान करें</string>
     <string name="hint_address_empty">पता सेट नहीं है</string>
+    <string name="hint_teacher_name_empty">शिक्षक का नाम सेट नहीं है</string>
     <string name="label_institution_type">संस्थान का प्रकार</string>
     <string name="value_school_type">प्राथमिक/माध्यमिक विद्यालय</string>
     <string name="label_app_status">ऐप की स्थिति</string>
@@ -363,4 +364,10 @@
     <string name="generated_on">तैयार किया गया</string>
     <string name="student_report">छात्र रिपोर्ट</string>
     <string name="hint_search_student">नाम या रोल द्वारा खोजें…</string>
+
+    <string name="logout_title">लॉगआउट की पुष्टि करें</string>
+    <string name="logout_message">क्या आप वाकई अपने अकाउंट से लॉगआउट करना चाहते हैं?</string>
+    <string name="yes">हाँ</string>
+    <string name="no">नहीं</string>
+    <string name="logout_success">सफलतापूर्वक लॉगआउट हो गया!</string>
 </resources>

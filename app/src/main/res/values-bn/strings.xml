@@ -202,6 +202,7 @@
     <string name="msg_error_unexpected">অপ্রত্যাশিত সমস্যা হয়েছে</string>
     <string name="hint_school_name_empty">স্কুলের নাম প্রদান করুন</string>
     <string name="hint_address_empty">ঠিকানা সেট করা নেই</string>
+    <string name="hint_teacher_name_empty">শিক্ষকের নাম সেট করা হয়নি</string>
     <string name="label_institution_type">প্রতিষ্ঠান ধরন</string>
     <string name="value_school_type">প্রাথমিক/মাধ্যমিক বিদ্যালয়</string>
     <string name="label_app_status">অ্যাপ স্ট্যাটাস</string>
@@ -364,4 +365,10 @@
     <string name="generated_on">তৈরির সময়</string>
     <string name="student_report">ছাত্র প্রতিবেদন</string>
     <string name="hint_search_student">নাম বা রোল দিয়ে খুঁজুন…</string>
+
+    <string name="logout_title">লগআউট নিশ্চিত করুন</string>
+    <string name="logout_message">আপনি কি নিশ্চিতভাবে আপনার অ্যাকাউন্ট থেকে লগআউট করতে চান?</string>
+    <string name="yes">হ্যাঁ</string>
+    <string name="no">না</string>
+    <string name="logout_success">সফলভাবে লগআউট হয়েছে!</string>
 </resources>
