@@ -9,4 +9,6 @@ interface UserRepository {
     suspend fun updatePassword(newPassword: String)
     suspend fun isEmailExists(email: String): Boolean
     suspend fun getUserByEmail(email: String): UserEntity?
+    suspend fun getTodayPresentCount(): Int
+    suspend fun getTotalStudentCount(): Int
 }

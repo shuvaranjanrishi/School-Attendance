@@ -54,4 +54,10 @@ interface AttendanceDao {
 
     @Query("SELECT * FROM tbl_attendance WHERE date LIKE '%' || '-' || :month || '-' || :year")
     fun getMonthlyAttendanceData(month: String, year: String): Flow<List<AttendanceEntity>>
+
+    @Query("SELECT COUNT(*) FROM tbl_attendance WHERE status = 'Present' AND date = :todayDate")
+    suspend fun getTodayPresentCount(todayDate: String): Int
+
+    @Query("SELECT COUNT(*) FROM tbl_attendance")
+    suspend fun getTotalStudentCount(): Int
 }

@@ -21,9 +21,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.therishideveloper.schoolattendance.R
 import com.therishideveloper.schoolattendance.data.local.entity.UserEntity
+import com.therishideveloper.schoolattendance.data.local.entity.UserStats
 import com.therishideveloper.schoolattendance.ui.components.myTopBarColors
 import com.therishideveloper.schoolattendance.ui.viewmodels.ProfileViewModel
 import com.therishideveloper.schoolattendance.utils.Result
+import com.therishideveloper.schoolattendance.utils.localizeDigitsAndLabels
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,6 +35,7 @@ fun UserProfileScreen(
     onEditClick: () -> Unit
 ) {
     val userResult by viewModel.userState.collectAsState()
+    val stats by viewModel.userStats.collectAsState()
 
     Scaffold(
         topBar = {
@@ -60,7 +63,7 @@ fun UserProfileScreen(
             }
 
             is Result.Success -> {
-                UserProfileContent(state.data, padding)
+                UserProfileContent(stats, state.data, padding)
             }
 
             is Result.Error -> {
@@ -73,7 +76,11 @@ fun UserProfileScreen(
 }
 
 @Composable
-fun UserProfileContent(user: UserEntity?, padding: PaddingValues) {
+fun UserProfileContent(
+    stats: UserStats,
+    user: UserEntity?,
+    padding: PaddingValues
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -115,7 +122,7 @@ fun UserProfileContent(user: UserEntity?, padding: PaddingValues) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                user?.name ?: "Teacher Name",
+                user?.name ?: stringResource(R.string.hint_teacher_name_empty),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
@@ -129,9 +136,21 @@ fun UserProfileContent(user: UserEntity?, padding: PaddingValues) {
                 .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            StatItem(stringResource(R.string.stats_total_classes), "145", Modifier.weight(1f))
-            StatItem(stringResource(R.string.stats_attendance_done), "132", Modifier.weight(1f))
-            StatItem(stringResource(R.string.stats_avg_present), "88%", Modifier.weight(1f))
+            StatItem(
+                stringResource(R.string.present),
+                stats.totalPresent.toString(),
+                Modifier.weight(1f)
+            )
+            StatItem(
+                stringResource(R.string.absent),
+                stats.totalAbsent.toString(),
+                Modifier.weight(1f)
+            )
+            StatItem(
+                stringResource(R.string.attendance_rate),
+                stats.attendanceRate,
+                Modifier.weight(1f)
+            )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -198,7 +217,7 @@ fun StatItem(label: String, value: String, modifier: Modifier) {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                value,
+                value.localizeDigitsAndLabels(),
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.primary

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.therishideveloper.schoolattendance.data.local.SettingsManager
 import com.therishideveloper.schoolattendance.data.local.entity.UserEntity
+import com.therishideveloper.schoolattendance.data.local.entity.UserStats
 import com.therishideveloper.schoolattendance.domain.repository.SchoolRepository
 import com.therishideveloper.schoolattendance.domain.repository.UserRepository
 import com.therishideveloper.schoolattendance.utils.Result
@@ -34,6 +35,36 @@ class ProfileViewModel @Inject constructor(
     init {
         loadProfileData(showLoading = true)
         loadSchoolData()
+        loadDailyStats()
+    }
+
+    // Inside ProfileViewModel
+    private val _userStats = MutableStateFlow(UserStats())
+    val userStats = _userStats.asStateFlow()
+
+    // English Comment: Fetch attendance data and calculate percentages
+    fun loadDailyStats() {
+        viewModelScope.launch {
+            try {
+                // English Comment: Replace these with your actual DAO/Repository calls
+                val presentCount = repository.getTodayPresentCount()
+                val totalStudents = repository.getTotalStudentCount()
+                val absentCount = totalStudents - presentCount
+
+                // English Comment: Calculate percentage safely
+                val rate = if (totalStudents > 0) {
+                    "${(presentCount * 100) / totalStudents}%"
+                } else "0%"
+
+                _userStats.value = UserStats(
+                    totalPresent = presentCount,
+                    totalAbsent = absentCount,
+                    attendanceRate = rate
+                )
+            } catch (e: Exception) {
+                // English Comment: Handle error state if necessary
+            }
+        }
     }
 
     private fun loadSchoolData() {

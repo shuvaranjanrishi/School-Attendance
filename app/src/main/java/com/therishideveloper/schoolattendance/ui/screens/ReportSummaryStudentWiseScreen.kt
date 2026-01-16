@@ -91,7 +91,14 @@ fun ReportSummaryStudentWiseScreen(
         }
 
         Column(modifier = Modifier.padding(paddingValues)) {
-            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+            Column(
+                modifier = Modifier.padding(
+                    start = 16.dp,
+                    end = 16.dp,
+                    top = 8.dp,
+                    bottom = 3.dp
+                )
+            ) {
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = { viewModel.onSearch(it) },
@@ -102,7 +109,6 @@ fun ReportSummaryStudentWiseScreen(
                     leadingIcon = { Icon(Icons.Filled.Search, null) }
                 )
 
-                Spacer(Modifier.height(12.dp))
 
                 Row(
                     modifier = Modifier.horizontalScroll(rememberScrollState()),
@@ -135,7 +141,12 @@ fun ReportSummaryStudentWiseScreen(
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
+                    contentPadding = PaddingValues(
+                        top = 3.dp,
+                        bottom = 16.dp,
+                        start = 16.dp,
+                        end = 16.dp
+                    ),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(studentSummaries) { report ->
@@ -294,7 +305,7 @@ fun StudentReportCard(
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.weight(1f) // নাম বড় হলে যাতে আইকনকে ধাক্কা না দেয়
+                    modifier = Modifier.weight(1f)
                 )
 
                 Icon(

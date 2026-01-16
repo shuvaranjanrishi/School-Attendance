@@ -4,7 +4,7 @@ package com.therishideveloper.schoolattendance.data.local.entity
  * Data class for UI-only statistics summary.
  */
 data class UserStats(
-    val totalClasses: String = "120",
-    val attendanceCompleted: String = "115",
-    val averagePresence: String = "92%"
+    val totalPresent: Int = 0,
+    val totalAbsent: Int = 0,
+    val attendanceRate: String = "0%"
 )
