@@ -366,7 +366,7 @@
     <string name="hint_search_student">Search by name or roll…</string>
 
     <string name="logout_title">Confirm Logout</string>
-    <string name="logout_message">Are you sure you want to log out from your account?</string>
+    <string name="logout_message">Are you sure you want to logout from your account?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="logout_success">Logged out successfully!</string>

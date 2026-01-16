@@ -35,15 +35,16 @@ fun MainScreen() {
     val userResult by profileViewModel.userState.collectAsState()
     val schoolData by profileViewModel.schoolState.collectAsState()
     val user = (userResult as? Result.Success)?.data
+    val logoutSuccessMessage = stringResource(R.string.logout_success)
 
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
             title = {
-                Text(text = "লগআউট নিশ্চিত করুন", style = MaterialTheme.typography.titleLarge)
+                Text(text = stringResource(R.string.logout_title), style = MaterialTheme.typography.titleLarge)
             },
             text = {
-                Text(text = "আপনি কি নিশ্চিতভাবে আপনার অ্যাকাউন্ট থেকে লগআউট করতে চান?")
+                Text(text = stringResource(R.string.logout_message))
             },
             confirmButton = {
                 Button(
@@ -57,17 +58,17 @@ fun MainScreen() {
                                     popUpTo(0) { inclusive = true }
                                     launchSingleTop = true
                                 }
-                                Toast.makeText(context, "সফলভাবে লগআউট হয়েছে!", Toast.LENGTH_LONG).show()
+                                Toast.makeText(context, logoutSuccessMessage, Toast.LENGTH_LONG).show()
                             }
                         }
                     }
                 ) {
-                    Text("হ্যাঁ")
+                    Text(stringResource(R.string.yes))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showLogoutDialog = false }) {
-                    Text("না")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
