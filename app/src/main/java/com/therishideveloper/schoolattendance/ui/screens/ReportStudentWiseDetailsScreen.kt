@@ -259,7 +259,7 @@ fun ReportStudentWiseDetailsScreen(
             if (isDownloading) {
                 LoadingOverlay(
                     isLoading = true,
-                    message = stringResource(R.string.pdf_creating_msg)
+                    message = stringResource(R.string.file_creating_msg)
                 )
             }
         }

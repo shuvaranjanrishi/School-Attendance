@@ -155,7 +155,7 @@
     <string name="pdf_label_address">Address: </string>
     <string name="pdf_label_country">Country: </string>
     <string name="pdf_label_admission_date">Admission Date: </string>
-    <string name="pdf_creating_msg">Creating PDF file…</string>
+    <string name="file_creating_msg">File is creating…</string>
     <string name="pdf_save_success">PDF Saved: Downloads/School Attendance/Profiles</string>
     <string name="pdf_save_failed">Failed to save PDF. Please try again.</string>
     <string name="pdf_hint_school_name">Set School Name</string>

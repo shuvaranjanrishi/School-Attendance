@@ -413,7 +413,7 @@ fun DetailDialogs(
 
     LoadingOverlay(
         isLoading = isPdfGenerating,
-        message = stringResource(id = R.string.pdf_creating_msg) // পিডিএফ তৈরির মেসেজ
+        message = stringResource(id = R.string.file_creating_msg) // পিডিএফ তৈরির মেসেজ
     )
 
     if (showCall) {

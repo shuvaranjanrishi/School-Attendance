@@ -158,7 +158,7 @@
     <string name="pdf_label_admission_date">ভর্তির তারিখ: </string>
     <string name="pdf_save_success">PDF সেভ হয়েছে: Downloads/School Attendance/Profiles</string>
     <string name="pdf_save_failed">PDF সেভ করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।</string>
-    <string name="pdf_creating_msg">PDF ফাইল তৈরি হচ্ছে…</string>
+    <string name="file_creating_msg">ফাইল তৈরি হচ্ছে…</string>
     <string name="pdf_hint_school_name">স্কুলের নাম সেট করুন</string>
     <string name="pdf_hint_school_address">ঠিকানা সেট করুন</string>
     <string name="pdf_download_success">PDF ডাউনলোড সম্পন্ন</string>

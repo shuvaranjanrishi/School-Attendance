@@ -158,7 +158,7 @@
     <string name="pdf_label_admission_date">नामांकन तिथि: </string>
     <string name="pdf_save_success">PDF सहेजा गया: Downloads/School Attendance/Profiles</string>
     <string name="pdf_save_failed">PDF सहेजने में विफल। कृपया पुन: प्रयास करें।</string>
-    <string name="pdf_creating_msg">PDF फाइल बनाई जा रही है…</string>
+    <string name="file_creating_msg">फाइल बनाई जा रही है…</string>
     <string name="pdf_hint_school_name">स्कूल का नाम सेट करें</string>
     <string name="pdf_hint_school_address">पता सेट करें</string>
     <string name="pdf_download_success">PDF डाउनलोड पूर्ण हुआ</string>

@@ -114,7 +114,7 @@ fun ReportClassWiseDetailsScreen(
 
             LoadingOverlay(
                 isLoading = isDownloading,
-                message = stringResource(id = R.string.pdf_creating_msg)
+                message = stringResource(id = R.string.file_creating_msg)
             )
         }
     }
