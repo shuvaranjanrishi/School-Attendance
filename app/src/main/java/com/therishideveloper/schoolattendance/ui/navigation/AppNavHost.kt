@@ -47,10 +47,10 @@ fun AppNavHost(
         }
         composable(
             route = Screen.Attendance.route,
-            arguments = listOf(navArgument("className") { defaultValue = "" })
+            arguments = listOf(navArgument("classCode") { defaultValue = "" })
         ) { backStackEntry ->
-            val className = backStackEntry.arguments?.getString("className") ?: ""
-            if (className.isEmpty()) {
+            val classCode = backStackEntry.arguments?.getString("classCode") ?: ""
+            if (classCode.isEmpty()) {
                 AttendanceMainScreen(
                     viewModel = attendanceViewModel,
                     onClassClick = { selectedClass ->
@@ -61,7 +61,7 @@ fun AppNavHost(
             } else {
                 AttendanceTakeScreen(
                     viewModel = attendanceViewModel,
-                    className = className,
+                    classCode = classCode,
                     onBack = { navController.popBackStack() }
                 )
             }
@@ -90,11 +90,11 @@ fun AppNavHost(
             ReportSummeryClassWiseScreen(
                 onMenuClick = onMenuClick,
                 viewModel = reportViewModel,
-                onClassClick = { className ->
+                onClassClick = { classCode ->
                     val month = reportViewModel.selectedMonth.value
                     val year = reportViewModel.selectedYear.value
                     navController.navigate(
-                        Screen.ClassWiseDetailsReportScreen.createRoute(className, month, year)
+                        Screen.ClassWiseDetailsReportScreen.createRoute(classCode, month, year)
                     )
                 }
             )
@@ -111,19 +111,19 @@ fun AppNavHost(
         composable(
             route = Screen.ClassWiseDetailsReportScreen.route,
             arguments = listOf(
-                navArgument("className") { type = NavType.StringType },
+                navArgument("classCode") { type = NavType.StringType },
                 navArgument("month") { type = NavType.StringType },
                 navArgument("year") { type = NavType.StringType }
             )
         ) { backStackEntry ->
-            val className = backStackEntry.arguments?.getString("className") ?: ""
+            val classCode = backStackEntry.arguments?.getString("classCode") ?: ""
             val month = backStackEntry.arguments?.getString("month") ?: ""
             val year = backStackEntry.arguments?.getString("year") ?: ""
 
-            ClassWiseDetailsReportScreen(
+            ReportClassWiseDetailsScreen(
                 onBack = { navController.popBackStack() },
                 viewModel = reportViewModel,
-                classCode = className,
+                classCode = classCode,
                 month = month,
                 year = year
             )

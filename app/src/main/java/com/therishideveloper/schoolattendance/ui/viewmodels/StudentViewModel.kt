@@ -69,8 +69,8 @@ class StudentViewModel @Inject constructor(
         _selectedGender.value = gender
     }
 
-    fun onClassSelected(className: String?) {
-        _selectedClass.value = className
+    fun onClassSelected(classCode: String?) {
+        _selectedClass.value = classCode
     }
 
     fun refreshStudents() {
@@ -130,18 +130,18 @@ class StudentViewModel @Inject constructor(
             )
     }
 
-    suspend fun getStudentByRoll(roll: String, className: String): StudentEntity? {
-        return repository.getStudentByRollAndClass(roll, className)
+    suspend fun getStudentByRoll(roll: String, classCode: String): StudentEntity? {
+        return repository.getStudentByRollAndClass(roll, classCode)
     }
 
     private val _isPdfGenerating = MutableStateFlow(false)
     val isPdfGenerating = _isPdfGenerating.asStateFlow()
 
-    fun generatePdf(student: StudentEntity) {
+    fun downloadStudentProfilePdf(student: StudentEntity) {
         viewModelScope.launch {
             _isPdfGenerating.value = true
             val result = withContext(Dispatchers.IO) {
-                pdfGenerator.downloadStudentProfilePdf(student)
+                pdfGenerator.generateStudentProfilePdf(student)
             }
             _isPdfGenerating.value = false
 

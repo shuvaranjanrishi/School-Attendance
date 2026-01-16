@@ -151,7 +151,7 @@ fun SettingsScreen(
                 // --- Download Section ---
                 SettingsSection(title = stringResource(R.string.section_file_download)) {
                     SettingsItem(
-                        title = stringResource(R.string.download_excel_file),
+                        title = stringResource(R.string.download_excel),
                         subtitle = stringResource(R.string.export_student_list_desc),
                         icon = Icons.Default.FileDownload,
                         onClick = { activeDialog = SettingsDialogType.EXCEL }
@@ -246,7 +246,7 @@ enum class SettingsDialogType { EXCEL, BACKUP, RESTORE, DELETE_ALL }
 @Composable
 fun SettingsConfirmDialog(type: SettingsDialogType, onConfirm: () -> Unit, onDismiss: () -> Unit) {
     val title = when (type) {
-        SettingsDialogType.EXCEL -> R.string.download_excel_file
+        SettingsDialogType.EXCEL -> R.string.download_excel
         SettingsDialogType.BACKUP -> R.string.backup_info_title
         SettingsDialogType.RESTORE -> R.string.confirm_restore_title
         SettingsDialogType.DELETE_ALL -> R.string.delete_confirm_title

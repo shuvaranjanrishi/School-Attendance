@@ -19,14 +19,6 @@ class Constants {
             return (APP_START_YEAR..currentYear + 2).map { it.toString() }.reversed()
         }
     }
-
-
-//    fun getYearRange(): List<String> {
-//        val currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
-//        return (currentYear - 5..currentYear + 5).map { it.toString() }
-//    }
-//
-//    val MONTH_CODES = listOf("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12")
 }
 
 

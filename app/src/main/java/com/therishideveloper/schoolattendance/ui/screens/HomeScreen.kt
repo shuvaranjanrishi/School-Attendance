@@ -1,23 +1,15 @@
 package com.therishideveloper.schoolattendance.ui.screens
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -28,11 +20,7 @@ import com.therishideveloper.schoolattendance.ui.components.SummaryCard
 import com.therishideveloper.schoolattendance.ui.components.VerticalSpace
 import com.therishideveloper.schoolattendance.ui.components.myTopBarColors
 import com.therishideveloper.schoolattendance.ui.viewmodels.HomeViewModel
-import com.therishideveloper.schoolattendance.utils.DateUtils
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
+import com.therishideveloper.schoolattendance.utils.DateTimeUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,13 +32,13 @@ fun HomeScreen(
     val monthData by homeViewModel.monthSummary.collectAsState(initial = DashboardData(0, 0, 0))
     val yearData by homeViewModel.yearSummary.collectAsState(initial = DashboardData(0, 0, 0))
     val selectedDate by homeViewModel.selectedDate.collectAsState()
-    val displayDate = remember(selectedDate) { DateUtils.getDisplayDate(selectedDate) }
+    val displayDate = remember(selectedDate) { DateTimeUtils.getDisplayDate(selectedDate) }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Column {
+                    Column(verticalArrangement = Arrangement.spacedBy((-4).dp)) {
                         Text(stringResource(R.string.dashboard), fontWeight = FontWeight.ExtraBold)
                         Text(
                             text = displayDate,
@@ -73,8 +61,9 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .padding(horizontal = 16.dp)
-                .verticalScroll(rememberScrollState()), // স্ক্রল করার জন্য
-            horizontalAlignment = Alignment.CenterHorizontally
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy((-4).dp)
         ) {
             VerticalSpace(12)
             SummaryCard(

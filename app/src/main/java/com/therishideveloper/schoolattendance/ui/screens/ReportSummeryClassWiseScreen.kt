@@ -13,7 +13,7 @@ import com.therishideveloper.schoolattendance.ui.components.EmptyStateView
 import com.therishideveloper.schoolattendance.ui.components.ReportCard
 import com.therishideveloper.schoolattendance.ui.components.ReportTopBar
 import com.therishideveloper.schoolattendance.ui.viewmodels.ReportViewModel
-import com.therishideveloper.schoolattendance.utils.DateUtils.getFormattedDate
+import com.therishideveloper.schoolattendance.utils.DateTimeUtils.getFormattedDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,7 +53,7 @@ fun ReportSummeryClassWiseScreen(
                     items(reportData) { data ->
                         ReportCard(
                             report = data,
-                            onClick = { onClassClick(data.className) }
+                            onClick = { onClassClick(data.classCode) }
                         )
                     }
                 }

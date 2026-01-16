@@ -28,18 +28,14 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.therishideveloper.schoolattendance.R
-import com.therishideveloper.schoolattendance.utils.DateUtils
-import com.therishideveloper.schoolattendance.utils.DateUtils.calculateDuration
-import com.therishideveloper.schoolattendance.utils.DateUtils.formatDateToString
+import com.therishideveloper.schoolattendance.utils.DateTimeUtils
+import com.therishideveloper.schoolattendance.utils.DateTimeUtils.calculateDuration
+import com.therishideveloper.schoolattendance.utils.DateTimeUtils.formatDateToString
 import com.yalantis.ucrop.UCrop
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.ZoneId
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -95,7 +91,7 @@ fun AttendanceDatePicker(
         val currentLocale = LocalConfiguration.current.locales[0]
 
         // DateUtils ব্যবহার করে স্ট্রিং থেকে মিলিসেকেন্ড নেওয়া
-        val currentMillis = remember(initialDate) { DateUtils.dateToMillis(initialDate) }
+        val currentMillis = remember(initialDate) { DateTimeUtils.dateToMillis(initialDate) }
 
         val datePickerState = rememberDatePickerState(
             initialSelectedDateMillis = currentMillis,
@@ -118,7 +114,7 @@ fun AttendanceDatePicker(
                     TextButton(onClick = {
                         datePickerState.selectedDateMillis?.let { millis ->
                             // DateUtils ব্যবহার করে মিলিসেকেন্ড থেকে স্ট্রিং ফরম্যাটে রূপান্তর
-                            onDateSelected(DateUtils.millisToDate(millis))
+                            onDateSelected(DateTimeUtils.millisToDate(millis))
                         }
                         onDismiss()
                     }) {

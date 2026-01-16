@@ -41,10 +41,10 @@ class AttendanceViewModel @Inject constructor(
     private val _attendanceState = MutableStateFlow<Result<List<AttendanceEntity>>>(Result.Loading)
     val attendanceState = _attendanceState.asStateFlow()
 
-    fun loadStudentsForAttendance(className: String) {
+    fun loadStudentsForAttendance(classCode: String) {
         _attendanceState.value = Result.Loading
         viewModelScope.launch {
-            attendanceRepo.getAttendanceRecords(className, _selectedDate.value)
+            attendanceRepo.getAttendanceRecords(classCode, _selectedDate.value)
                 .catch { e ->
                     _attendanceState.value = Result.Error(e.message ?: "অজানা ত্রুটি")
                 }

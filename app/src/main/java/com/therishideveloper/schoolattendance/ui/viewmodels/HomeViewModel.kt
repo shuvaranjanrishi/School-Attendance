@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.therishideveloper.schoolattendance.data.local.model.DashboardData // আপনার মডেলের নাম অনুযায়ী
 import com.therishideveloper.schoolattendance.domain.repository.AttendanceRepository
-import com.therishideveloper.schoolattendance.utils.DateUtils
+import com.therishideveloper.schoolattendance.utils.DateTimeUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,9 +19,9 @@ class HomeViewModel @Inject constructor(
     repository: AttendanceRepository
 ) : ViewModel() {
 
-    private val today = DateUtils.getTodayDate()
-    private val currentMonth = DateUtils.getCurrentMonth()
-    private val currentYear = DateUtils.getCurrentYear()
+    private val today = DateTimeUtils.getTodayDate()
+    private val currentMonth = DateTimeUtils.getCurrentMonth()
+    private val currentYear = DateTimeUtils.getCurrentYear()
 
     // HomeViewModel-এর ভেতর
     // HomeViewModel এর ভেতর এই StateFlow টি যোগ করুন

@@ -19,11 +19,11 @@ sealed class Screen(val route: String, val resId: Int, val icon: ImageVector) {
     object Auth : Screen("auth_screen", 0, Icons.Default.Dashboard)
     object Home : Screen("home", R.string.dashboard, Icons.Default.Dashboard)
     object Attendance : Screen(
-        route = "attendance?className={className}",
+        route = "attendance?classCode={classCode}",
         resId = R.string.take_attendance,
         icon = Icons.Default.CheckCircle
     ) {
-        fun createRoute(className: String) = "attendance?className=$className"
+        fun createRoute(classCode: String) = "attendance?classCode=$classCode"
     }
     object Students : Screen("students", R.string.student_list, Icons.Default.People)
     object ReportsSummeryClassWiseScreen : Screen("monthly_class_reports", R.string.label_report, Icons.Default.Assessment)
@@ -41,12 +41,12 @@ sealed class Screen(val route: String, val resId: Int, val icon: ImageVector) {
         fun createRoute(id: Int) = "student_details_screen/$id"
     }
     object ClassWiseDetailsReportScreen : Screen(
-        route = "class_wise_details_report/{className}/{month}/{year}",
+        route = "class_wise_details_report/{classCode}/{month}/{year}",
         resId = R.string.label_report, // অথবা ০ যদি স্ট্রিং না থাকে
         icon = Icons.Default.Assessment
     ) {
-        fun createRoute(className: String, month: String, year: String) =
-            "class_wise_details_report/$className/$month/$year"
+        fun createRoute(classCode: String, month: String, year: String) =
+            "class_wise_details_report/$classCode/$month/$year"
     }
     object MonthlyReportDetailsCalendar : Screen(
         route = "monthly_report_details_calendar/{studentId}",

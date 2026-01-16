@@ -21,10 +21,7 @@ import com.therishideveloper.schoolattendance.ui.components.AttendanceDatePicker
 import com.therishideveloper.schoolattendance.ui.components.CalendarHeaderCard
 import com.therishideveloper.schoolattendance.ui.components.ClassGridCard
 import com.therishideveloper.schoolattendance.ui.components.myTopBarColors
-import com.therishideveloper.schoolattendance.utils.DateUtils
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import com.therishideveloper.schoolattendance.utils.DateTimeUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,7 +34,7 @@ fun AttendanceMainScreen(
     val summaries by viewModel.classSummaries.collectAsState()
     val selectedDate by viewModel.selectedDate.collectAsState()
     var showDatePicker by remember { mutableStateOf(false) }
-    val dateDisplay = remember(selectedDate) { DateUtils.getDisplayDate(selectedDate) }
+    val dateDisplay = remember(selectedDate) { DateTimeUtils.getDisplayDate(selectedDate) }
 
     AttendanceDatePicker(
         showDialog = showDatePicker,
@@ -77,7 +74,7 @@ fun AttendanceMainScreen(
                     .padding(horizontal = 8.dp)
             ) {
                 items(ClassTypes.getAll()) { classType ->
-                    val summary = summaries.find { it.className == classType.code }
+                    val summary = summaries.find { it.classCode == classType.code }
                         ?: ClassSummary(classType.code, 0, 0, 0)
                     ClassGridCard(classType, summary) {
                         viewModel.loadStudentsForAttendance(classType.code)

@@ -74,7 +74,8 @@
     <string name="delete_profile">प्रोफ़ाइल हटाएं</string>
     <string name="download_confirm_title">डाउनलोड की पुष्टि करें</string>
     <string name="download_confirm_msg">क्या आप %1$s की प्रोफ़ाइल PDF के रूप में डाउनलोड करना चाहते हैं?</string>
-    <string name="file_location_msg">स्थान: Downloads/School Attendance/Profiles</string>
+    <string name="profile_location_msg">स्थान: Downloads/School Attendance/Profiles</string>
+    <string name="report_location_msg">Location: Downloads/School Attendance/Reports</string>
     <string name="download_btn">डाउनलोड</string>
     <string name="call_title">कॉल करें</string>
     <string name="call_msg">क्या आप %1$s के अभिभावक को कॉल करना चाहते हैं?</string>
@@ -165,7 +166,6 @@
 
     <string name="section_file_download">फ़ाइल डाउनलोड</string>
     <string name="excel_save_success">एक्सेल सेव हो गया: Downloads/School Attendance/Exports</string>
-    <string name="download_excel_file">एक्सेल फ़ाइल डाउनलोड करें</string>
     <string name="export_student_list_desc">छात्र सूची को एक्सेल प्रारूप में एक्सपोर्ट करें</string>
     <string name="export_confirm_msg">छात्र सूची की एक एक्सेल फ़ाइल आपके डाउनलोड फ़ोल्डर में सहेजी जाएगी। क्या आप जारी रखना चाहते हैं?</string>
     <string name="exporting_excel">एक्सेल फ़ाइल बनाई जा रही है…</string>
@@ -355,7 +355,8 @@
     <string name="label_name">नाम</string>
     <string name="attendance_calender">हाज़िरी कैलेंडर</string>
     <string name="download_pdf">PDF डाउनलोड करें</string>
-    <string name="share_pdf">PDF शेयर करें</string>
+    <string name="share_pdf">PDF साझा करें</string>
+    <string name="download_excel">EXCEL डाउनलोड करें</string>
     <string name="no_records_found">कोई रिकॉर्ड नहीं मिला</string>
     <string name="total_days">कुल दिन</string>
     <string name="no_class">छुट्टी / कोई क्लास नहीं</string>

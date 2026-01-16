@@ -74,7 +74,8 @@
     <string name="delete_profile">Delete Profile</string>
     <string name="download_confirm_title">Confirm Download</string>
     <string name="download_confirm_msg">Do you want to download %1$s\'s profile as a PDF?</string>
-    <string name="file_location_msg">Location: Downloads/School Attendance/Profiles</string>
+    <string name="profile_location_msg">Location: Downloads/School Attendance/Profiles</string>
+    <string name="report_location_msg">Location: Downloads/School Attendance/Reports</string>
     <string name="download_btn">Download</string>
     <string name="call_title">Make a Call</string>
     <string name="call_msg">Do you want to call %1$s\'s guardian?</string>
@@ -164,7 +165,6 @@
 
     <string name="section_file_download">File Download</string>
     <string name="excel_save_success">Excel Saved: Downloads/School Attendance/Exports</string>
-    <string name="download_excel_file">Download Excel File</string>
     <string name="export_student_list_desc">Export student list to Excel format</string>
     <string name="export_confirm_msg">An Excel file of the student list will be saved to your Downloads folder. Do you want to continue?</string>
     <string name="exporting_excel">Creating Excel file…</string>
@@ -356,6 +356,7 @@
     <string name="attendance_calender">Attendance Calender</string>
     <string name="download_pdf">Download PDF</string>
     <string name="share_pdf">Share PDF</string>
+    <string name="download_excel">Download Excel</string>
     <string name="no_records_found">No Records Found</string>
     <string name="total_days">Total Days</string>
     <string name="no_class">No Class</string>

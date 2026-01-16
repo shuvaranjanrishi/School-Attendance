@@ -28,8 +28,8 @@ class StudentRepositoryImpl @Inject constructor(
         return dao.getStudentById(id)
     }
 
-    override suspend fun getStudentByRollAndClass(roll: String, className: String): StudentEntity? {
-        return dao.getStudentByRollAndClass(roll, className)
+    override suspend fun getStudentByRollAndClass(roll: String, classCode: String): StudentEntity? {
+        return dao.getStudentByRollAndClass(roll, classCode)
     }
 
     override fun searchStudents(query: String): Flow<List<StudentEntity>> {
@@ -46,8 +46,8 @@ class StudentRepositoryImpl @Inject constructor(
     override suspend fun clearAllData() {
         dao.deleteAllStudents()
     }
-    override suspend fun getStudentsByClass(className: String): List<StudentEntity> {
-        return dao.getStudentsByClass(className)
+    override suspend fun getStudentsByClass(classCode: String): List<StudentEntity> {
+        return dao.getStudentsByClass(classCode)
     }
     override fun getTotalStudentsCount(): Flow<Int> {
         return dao.getTotalStudentsCount()

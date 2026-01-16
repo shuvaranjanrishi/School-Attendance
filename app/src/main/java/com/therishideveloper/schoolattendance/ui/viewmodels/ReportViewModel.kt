@@ -25,7 +25,6 @@ class ReportViewModel @Inject constructor(
     private val excelExporter: ExcelExporter
 ) : ViewModel() {
 
-    // ১. স্টেট কন্ট্রোল
     val selectedMonth = MutableStateFlow(SimpleDateFormat("MM", Locale.US).format(Date()))
     val selectedYear = MutableStateFlow(SimpleDateFormat("yyyy", Locale.US).format(Date()))
 
@@ -53,7 +52,6 @@ class ReportViewModel @Inject constructor(
             attendanceRepo.getAllDetailedReportByMonth(month, year)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    // ৩. স্টুডেন্ট সামারি লজিক (অটোমেটিক আপডেট হবে)
     val studentSummaries: StateFlow<List<StudentMonthlySummary>> = detailedRecords.map { records ->
         records.groupBy { it.studentId }.map { (id, studentRecords) ->
             val first = studentRecords.first()
@@ -74,8 +72,6 @@ class ReportViewModel @Inject constructor(
         }.sortedWith(compareBy({ it.classCode }, { it.rollNo.toIntOrNull() ?: 0 }))
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    // ৪. ফিল্টার করা স্টুডেন্ট লিস্ট (UI তে দেখানোর জন্য)
-    @OptIn(ExperimentalCoroutinesApi::class)
     val filteredStudentSummaries = combine(
         studentSummaries,
         _searchQuery,
@@ -89,8 +85,6 @@ class ReportViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    // --- অ্যাকশন ফাংশনস ---
-
     fun onSearch(query: String) {
         _searchQuery.value = query
     }
@@ -102,7 +96,6 @@ class ReportViewModel @Inject constructor(
     fun updateDate(month: String, year: String) {
         selectedMonth.value = month
         selectedYear.value = year
-        // flatMapLatest এর কারণে ডাটা অটোমেটিক লোড হবে
     }
 
     fun generateMonthlyReportPdf(classCode: String, displayDate: String) {
@@ -119,25 +112,24 @@ class ReportViewModel @Inject constructor(
         }
     }
 
-    fun generateMonthlyReportExcel(className: String, displayDate: String) {
+    fun generateMonthlyReportExcel(classCode: String, displayDate: String) {
         val records =
-            detailedRecords.value.filter { it.classCode == className || className == "All" || className == "All Classes" }
+            detailedRecords.value.filter { it.classCode == classCode || classCode == "All" || classCode == "All Classes" }
         if (records.isEmpty()) return
 
         viewModelScope.launch {
             _isDownloading.value = true
             withContext(Dispatchers.IO) {
-                excelExporter.exportAttendanceReportToExcel(className, displayDate, records)
+                excelExporter.exportAttendanceReportToExcel(classCode, displayDate, records)
             }
             _isDownloading.value = false
         }
     }
 
-    // ViewModel এর ভেতর এই দুটি ফাংশন আপডেট করুন
     fun downloadStudentCalendarPdf(
         summary: StudentMonthlySummary,
         displayDate: String,
-        records: List<AttendanceEntity> // ক্যালেন্ডারের জন্য লিস্টটি পাঠাতে হবে
+        records: List<AttendanceEntity>
     ) {
         viewModelScope.launch {
             _isDownloading.value = true
@@ -159,7 +151,6 @@ class ReportViewModel @Inject constructor(
         }
     }
 
-    // Share ফাংশনটিও একইভাবে আপডেট করুন
     fun shareStudentCalendarPdf(
         summary: StudentMonthlySummary,
         displayDate: String,

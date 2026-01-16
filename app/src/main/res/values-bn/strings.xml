@@ -74,7 +74,8 @@
     <string name="delete_profile">প্রোফাইল মুছুন</string>
     <string name="download_confirm_title">ডাউনলোড নিশ্চিত করুন</string>
     <string name="download_confirm_msg">আপনি কি %1$s-এর প্রোফাইল পিডিএফ হিসেবে ডাউনলোড করতে চান?</string>
-    <string name="file_location_msg">অবস্থান: Downloads/School Attendance/Profiles</string>
+    <string name="profile_location_msg">অবস্থান: Downloads/School Attendance/Profiles</string>
+    <string name="report_location_msg">Location: Downloads/School Attendance/Reports</string>
     <string name="download_btn">ডাউনলোড</string>
     <string name="call_title">কল করুন</string>
     <string name="call_msg">আপনি কি %1$s-এর অভিভাবককে কল করতে চান?</string>
@@ -165,7 +166,6 @@
 
     <string name="section_file_download">ফাইল ডাউনলোড</string>
     <string name="excel_save_success">এক্সেল সেভ হয়েছে: Downloads/School Attendance/Exports</string>
-    <string name="download_excel_file">এক্সেল ফাইল ডাউনলোড</string>
     <string name="export_student_list_desc">শিক্ষার্থীদের তালিকা এক্সেল ফরম্যাটে এক্সপোর্ট করুন</string>
     <string name="export_confirm_msg">শিক্ষার্থীদের তালিকার একটি এক্সেল ফাইল আপনার ডাউনলোড ফোল্ডারে সেভ করা হবে। আপনি কি এগিয়ে যেতে চান?</string>
     <string name="exporting_excel">এক্সেল ফাইল তৈরি হচ্ছে…</string>
@@ -355,8 +355,9 @@
 
     <string name="label_name">নাম</string>
     <string name="attendance_calender">হাজিরা ক্যালেন্ডার</string>
-    <string name="download_pdf">PDF ডাউনলোড</string>
-    <string name="share_pdf">PDF শেয়ার করুন</string>
+    <string name="download_pdf">PDF ডাউনলোড করুন</string>
+    <string name="share_pdf">PDF শেয়ার করুন</string>
+    <string name="download_excel">EXCEL ডাউনলোড করুন</string>
     <string name="no_records_found">কোন রেকর্ড পাওয়া যায়নি</string>
     <string name="total_days">মোট দিন</string>
     <string name="no_class">ছুটি/ক্লাস নেই</string>

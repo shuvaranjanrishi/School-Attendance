@@ -7,8 +7,10 @@ import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.therishideveloper.schoolattendance.R
 import com.therishideveloper.schoolattendance.ui.components.AttendanceTable
@@ -18,11 +20,11 @@ import com.therishideveloper.schoolattendance.ui.components.ReportDownloadDialog
 import com.therishideveloper.schoolattendance.ui.components.myTopBarColors
 import com.therishideveloper.schoolattendance.ui.viewmodels.ReportViewModel
 import com.therishideveloper.schoolattendance.utils.ClassTypes
-import com.therishideveloper.schoolattendance.utils.DateUtils.getFormattedDate
+import com.therishideveloper.schoolattendance.utils.DateTimeUtils.getFormattedDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ClassWiseDetailsReportScreen(
+fun ReportClassWiseDetailsScreen(
     onBack: () -> Unit,
     classCode: String,
     month: String,
@@ -47,11 +49,14 @@ fun ClassWiseDetailsReportScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        "${stringResource(id = className)} - $displayDate",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Column(verticalArrangement = Arrangement.spacedBy((-4).dp)) {
+                        Text(
+                            stringResource(id = className),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(displayDate, fontSize = 12.sp, color = Color.White.copy(alpha = 0.8f))
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
@@ -71,7 +76,7 @@ fun ClassWiseDetailsReportScreen(
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text(stringResource(R.string.download_excel_file)) },
+                                text = { Text(stringResource(R.string.download_excel)) },
                                 onClick = {
                                     showMenu = false; selectedFormat = 1; showDownloadConfirm = true
                                 }

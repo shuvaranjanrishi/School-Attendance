@@ -4,8 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.*
-import android.graphics.pdf.PdfDocument
-import android.os.Environment
+import android.util.Log
 import androidx.core.content.FileProvider
 import com.therishideveloper.schoolattendance.R
 import com.therishideveloper.schoolattendance.data.local.SettingsManager
@@ -16,14 +15,10 @@ import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
 import java.io.File
-import java.io.FileOutputStream
 import java.util.Locale
 import androidx.core.graphics.toColorInt
-import androidx.core.graphics.scale
 import com.therishideveloper.schoolattendance.data.local.entity.AttendanceEntity
-import com.therishideveloper.schoolattendance.data.local.entity.SchoolEntity
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 
 @Singleton
@@ -33,7 +28,7 @@ class PdfGenerator @Inject constructor(
     private val settingsManager: SettingsManager
 ) {
 
-    suspend fun downloadStudentProfilePdf(student: StudentEntity): Result<File> {
+    suspend fun generateStudentProfilePdf(student: StudentEntity): Result<File> {
         val school = schoolRepository.getSchool()
         val (pdfDocument, page, canvas, paint, pageWidth, pageHeight) = PdfHelper.setupPdfPage(false)
 
@@ -53,7 +48,6 @@ class PdfGenerator @Inject constructor(
             studentProfile
         )
 
-        // --- ডাটা সেকশন শুরু ---
         var yPos = 240f
         val lineSpacing = 38f
 
@@ -212,12 +206,11 @@ class PdfGenerator @Inject constructor(
         val school = schoolRepository.getSchool()
         val (pdfDocument, page, canvas, paint, pageWidth, pageHeight) = PdfHelper.setupPdfPage(true)
 
-        // ২. হেডার
+        //draw header
         val schoolName = school?.name ?: getLabel(R.string.pdf_hint_school_name)
         val schoolAddress = school?.address ?: getLabel(R.string.pdf_hint_school_address)
         val className = getLabel(ClassTypes.fromCode(classCode).stringRes).replace("Class ", "")
         val pageTitle = "${getLabel(R.string.label_report)}: $className ($monthYear)"
-
         PdfHelper.drawCommonHeader(
             canvas,
             school,
@@ -228,26 +221,24 @@ class PdfGenerator @Inject constructor(
             schoolAddress
         )
 
-        // ৩. টেবিল ডাইমেনশন ও কালার
+        //table dimension and color
         val startX = 30f
         val startY = 160f
         val nameWidth = 140f
         val totalTableWidth = pageWidth - 60f
         val dayWidth = (totalTableWidth - nameWidth) / 31f
         val rowHeight = 25f
-        val borderColor = "#CCCCCC".toColorInt() // সব বর্ডার ও ডিভাইডারের জন্য একই কালার
+        val borderColor = "#CCCCCC".toColorInt()
 
         paint.style = Paint.Style.FILL
         paint.color = "#F5F5F5".toColorInt()
         canvas.drawRect(startX, startY, startX + totalTableWidth, startY + rowHeight, paint)
 
-        // এবার হেডারের মেইন বর্ডার
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = 1f
         paint.color = borderColor
         canvas.drawRect(startX, startY, startX + totalTableWidth, startY + rowHeight, paint)
 
-        // হেডার টেক্সট (নাম এবং তারিখ)
         paint.style = Paint.Style.FILL
         paint.color = Color.BLACK
         paint.textSize = 10f
@@ -312,8 +303,7 @@ class PdfGenerator @Inject constructor(
         }
 
         //draw footer
-        val genDate = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(Date())
-            .localizeDigitsAndLabels()
+        val genDate = DateTimeUtils.getFileCreatedDate().localizeDigitsAndLabels()
         val devName = getLabel(R.string.dev_name)
         val devLabel = getLabel(R.string.label_developer)
         val genLabel = getLabel(R.string.generated_on)
@@ -331,14 +321,14 @@ class PdfGenerator @Inject constructor(
         pdfDocument.finishPage(page)
 
         val fileName =
-            "Monthly_Report_${className.replace(" ", "_")}_${monthYear.replace(" ", "_")}.pdf"
+            "Report_${className.replace(" ", "_")}_${monthYear.replace(" ", "_")}.pdf"
         val title = getLabel(R.string.pdf_download_success)
         val desc = "$className - $monthYear"
 
         return PdfHelper.finalizePdf(
             context,
             pdfDocument,
-            Constants.FOLDER_PROFILES,
+            Constants.FOLDER_REPORTS,
             fileName,
             title,
             desc
@@ -417,21 +407,20 @@ class PdfGenerator @Inject constructor(
             }", rightInfoStart, cardTop + 35f, paint
         )
 
-        paint.color = "#2E7D32".toColorInt() // গ্রিন
+        paint.color = "#2E7D32".toColorInt()
         canvas.drawText(
             "${getLabel(R.string.present)}: ${
                 present.toString().localizeDigitsAndLabels()
             }", rightInfoStart, cardTop + 55f, paint
         )
 
-        paint.color = "#D32F2F".toColorInt() // রেড
+        paint.color = "#D32F2F".toColorInt()
         canvas.drawText(
             "${getLabel(R.string.absent)}: ${
                 absent.toString().localizeDigitsAndLabels()
             }", rightInfoStart, cardTop + 75f, paint
         )
 
-        // --- প্রোগ্রেস সার্কেল (আর্ক) ---
         val centerX = (pageWidth - 100).toFloat()
         val centerY = (cardTop + cardBottom) / 2
         paint.style = Paint.Style.STROKE
@@ -456,8 +445,7 @@ class PdfGenerator @Inject constructor(
         drawAttendanceLegend(canvas, paint, 300f)
         PdfHelper.drawCalendarGrid(canvas, paint, 65f, 380f, records)
 
-        val genDate = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(Date())
-            .localizeDigitsAndLabels()
+        val genDate = DateTimeUtils.getFileCreatedDate().localizeDigitsAndLabels()
         val devName = getLabel(R.string.dev_name)
         val devLabel = getLabel(R.string.label_developer)
         val genLabel = getLabel(R.string.generated_on)
@@ -475,14 +463,15 @@ class PdfGenerator @Inject constructor(
 
         pdfDocument.finishPage(page)
 
-        val folder = if (isSharing) "shared_reports" else Constants.FOLDER_REPORTS
-        val fileName = "Report_${studentName.replace(" ", "_")}_${monthYear.replace(" ", "_")}.pdf"
+        val folderName = if (isSharing) "shared_reports" else Constants.FOLDER_REPORTS
+        val fileName =
+            "Report_${rollNo}_${studentName.replace(" ", "_")}_${monthYear.replace(" ", "_")}.pdf"
         val desc = getLabel(R.string.pdf_download_desc).format(studentName)
 
         return PdfHelper.finalizePdf(
             context = context,
             pdfDocument = pdfDocument,
-            folderName = folder,
+            folderName = folderName,
             fileName = fileName,
             title = title,
             desc = desc,

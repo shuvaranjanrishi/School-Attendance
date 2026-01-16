@@ -127,12 +127,13 @@ class ExcelExporter @Inject constructor(
             FileOutputStream(file).use { workbook.write(it) }
             workbook.close()
 
-            // নোটিফিকেশন
+            val title = "Excel Report Ready"
+            val desc = "$className - $monthYear report downloaded."
             showDownloadNotification(
                 context = context,
                 file = file,
-                title = "Excel Report Ready",
-                description = "$className - $monthYear report downloaded.",
+                title = title,
+                description = desc,
                 mimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
 

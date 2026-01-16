@@ -389,7 +389,7 @@ fun DetailDialogs(
                     Text(stringResource(R.string.download_confirm_msg, student.name))
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = stringResource(R.string.file_location_msg),
+                        text = stringResource(R.string.profile_location_msg),
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.Gray
                     )
@@ -398,7 +398,7 @@ fun DetailDialogs(
             confirmButton = {
                 Button(onClick = {
                     onDismissDownload()
-                    viewModel.generatePdf(student)
+                    viewModel.downloadStudentProfilePdf(student)
                 }) {
                     Text(stringResource(R.string.download_btn))
                 }

@@ -581,7 +581,7 @@ fun FormHeader(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClassSelectionSection(state: StudentFormState) {
-    val classNames = ClassTypes.getAll()
+    val classTypes = ClassTypes.getAll()
 
     VerticalSpace(4)
 
@@ -612,7 +612,7 @@ fun ClassSelectionSection(state: StudentFormState) {
             expanded = state.classExpanded,
             onDismissRequest = { state.classExpanded = false }
         ) {
-            classNames.forEach { type ->
+            classTypes.forEach { type ->
                 DropdownMenuItem(
                     text = { Text(stringResource(type.stringRes)) },
                     onClick = {

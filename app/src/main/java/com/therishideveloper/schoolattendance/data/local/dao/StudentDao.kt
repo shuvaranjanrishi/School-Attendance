@@ -9,7 +9,7 @@ interface StudentDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertStudent(student: StudentEntity)
 
-    @Query("SELECT * FROM students ORDER BY name ASC")
+    @Query("SELECT * FROM tbl_student ORDER BY name ASC")
     fun getAllStudents(): Flow<List<StudentEntity>>
 
     @Update
@@ -18,18 +18,18 @@ interface StudentDao {
     @Delete
     suspend fun deleteStudent(student: StudentEntity)
 
-    @Query("SELECT * FROM students WHERE id = :id")
+    @Query("SELECT * FROM tbl_student WHERE id = :id")
     fun getStudentById(id: Int): Flow<StudentEntity?>
 
-    @Query("SELECT * FROM students WHERE rollNo = :roll AND classCode = :className LIMIT 1")
-    suspend fun getStudentByRollAndClass(roll: String, className: String): StudentEntity?
+    @Query("SELECT * FROM tbl_student WHERE rollNo = :roll AND classCode = :classCode LIMIT 1")
+    suspend fun getStudentByRollAndClass(roll: String, classCode: String): StudentEntity?
 
-    @Query("SELECT * FROM students WHERE name LIKE :query OR rollNo LIKE :query ORDER BY rollNo ASC")
+    @Query("SELECT * FROM tbl_student WHERE name LIKE :query OR rollNo LIKE :query ORDER BY rollNo ASC")
     fun searchStudents(query: String): Flow<List<StudentEntity>>
 
     @Query(
         """
-        SELECT * FROM students 
+        SELECT * FROM tbl_student 
         WHERE (name LIKE :query OR rollNo LIKE :query) 
         AND (:classFilter IS NULL OR classCode = :classFilter)
         AND (:gender IS NULL OR genderCode = :gender)
@@ -37,12 +37,12 @@ interface StudentDao {
     )
     fun searchAndFilterStudents(query: String, classFilter: String?, gender: String?): Flow<List<StudentEntity>>
 
-    @Query("DELETE FROM students")
+    @Query("DELETE FROM tbl_student")
     suspend fun deleteAllStudents()
-    @Query("SELECT * FROM students WHERE classCode = :className ORDER BY CAST(rollNo AS INTEGER) ASC")
-    suspend fun getStudentsByClass(className: String): List<StudentEntity>
+    @Query("SELECT * FROM tbl_student WHERE classCode = :classCode ORDER BY CAST(rollNo AS INTEGER) ASC")
+    suspend fun getStudentsByClass(classCode: String): List<StudentEntity>
 
     // --- ড্যাশবোর্ডের জন্য নতুন কুয়েরি ---
-    @Query("SELECT COUNT(*) FROM students")
+    @Query("SELECT COUNT(*) FROM tbl_student")
     fun getTotalStudentsCount(): Flow<Int>
 }

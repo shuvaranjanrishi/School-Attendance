@@ -8,7 +8,7 @@ import com.therishideveloper.schoolattendance.data.local.entity.SchoolEntity
 
 @Dao
 interface SchoolDao {
-    @Query("SELECT * FROM school_profile WHERE id = 1")
+    @Query("SELECT * FROM tbl_school WHERE id = 1")
     suspend fun getSchoolProfile(): SchoolEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

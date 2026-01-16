@@ -27,7 +27,7 @@ import com.therishideveloper.schoolattendance.ui.components.LoadingOverlay
 import com.therishideveloper.schoolattendance.ui.components.myTopBarColors
 import com.therishideveloper.schoolattendance.ui.viewmodels.ReportViewModel
 import com.therishideveloper.schoolattendance.utils.ClassTypes
-import com.therishideveloper.schoolattendance.utils.DateUtils.getFormattedDate
+import com.therishideveloper.schoolattendance.utils.DateTimeUtils.getFormattedDate
 import com.therishideveloper.schoolattendance.R
 import com.therishideveloper.schoolattendance.utils.localizeDigitsAndLabels
 
@@ -64,7 +64,7 @@ fun ReportStudentWiseDetailsScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Column {
+                    Column(verticalArrangement = Arrangement.spacedBy((-4).dp)) {
                         Text(
                             stringResource(R.string.attendance_calender),
                             fontSize = 18.sp,
@@ -87,8 +87,8 @@ fun ReportStudentWiseDetailsScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(12.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            .padding(start = 8.dp, top = 14.dp, bottom = 14.dp, end = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Button(
                             onClick = {
@@ -98,12 +98,17 @@ fun ReportStudentWiseDetailsScreen(
                                     specificStudentRecords
                                 )
                             },
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier
+                                .weight(1f),
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Icon(Icons.Default.FileDownload, contentDescription = null)
+                            Icon(
+                                Icons.Default.FileDownload,
+                                contentDescription = null,
+                                modifier = Modifier.size(15.dp)
+                            )
                             Spacer(Modifier.width(5.dp))
-                            Text(stringResource(R.string.download_pdf))
+                            Text(stringResource(R.string.download_pdf), fontSize = 12.sp)
                         }
 
                         // ২. শেয়ার বাটন
@@ -115,12 +120,17 @@ fun ReportStudentWiseDetailsScreen(
                                     specificStudentRecords
                                 )
                             },
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier
+                                .weight(1f),
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Icon(Icons.Default.Share, contentDescription = null)
+                            Icon(
+                                Icons.Default.Share,
+                                contentDescription = null,
+                                modifier = Modifier.size(15.dp)
+                            )
                             Spacer(Modifier.width(5.dp))
-                            Text(stringResource(R.string.share_pdf))
+                            Text(stringResource(R.string.share_pdf), fontSize = 12.sp)
                         }
                     }
                 }

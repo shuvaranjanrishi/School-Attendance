@@ -1,7 +1,7 @@
 package com.therishideveloper.schoolattendance.data.local.model
 
 data class MonthlyReportModel(
-    val className: String,
+    val classCode: String,
     val totalAttendance: Int,
     val presentCount: Int,
     val absentCount: Int,

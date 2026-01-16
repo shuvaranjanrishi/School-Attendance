@@ -17,17 +17,17 @@ class AttendanceRepositoryImpl @Inject constructor(
     private val studentDao: StudentDao
 ) : AttendanceRepository {
 
-    override fun getClassSummary(className: String, date: String): Flow<ClassSummary> {
-        return attendanceDao.getClassSummary(className, date)
+    override fun getClassSummary(classCode: String, date: String): Flow<ClassSummary> {
+        return attendanceDao.getClassSummary(classCode, date)
     }
 
     override fun getAttendanceRecords(
-        className: String,
+        classCode: String,
         date: String
     ): Flow<List<AttendanceEntity>> {
-        return attendanceDao.getAttendanceByClassAndDate(className, date).map { records ->
+        return attendanceDao.getAttendanceByClassAndDate(classCode, date).map { records ->
             records.ifEmpty {
-                val students = studentDao.getStudentsByClass(className)
+                val students = studentDao.getStudentsByClass(classCode)
                 students.map { student ->
                     AttendanceEntity(
                         studentId = student.id,
@@ -87,11 +87,11 @@ class AttendanceRepositoryImpl @Inject constructor(
     override fun getMonthlyReport(month: String, year: String): Flow<List<MonthlyReportModel>> {
         // এখানে DAO এর সেই একটি কমন ফাংশন কল করছি
         return attendanceDao.getMonthlyAttendanceData(month, year).map { entities ->
-            entities.groupBy { it.classCode }.map { (className, records) ->
+            entities.groupBy { it.classCode }.map { (classCode, records) ->
                 // ... আপনার আগের ক্যালকুলেশন লজিক (total, present, absent ইত্যাদি) ...
                 // এটি গ্রাফ বা ক্লাস সামারি স্ক্রিনে দেখাবে
                 calculateMonthlyReportModel(
-                    className,
+                    classCode,
                     records
                 ) // একটি হেল্পার ফাংশন হিসেবে রাখতে পারেন
             }
@@ -100,13 +100,13 @@ class AttendanceRepositoryImpl @Inject constructor(
 
     // এটি নির্দিষ্ট একটি ক্লাসের সব রেকর্ড ফিল্টার করে দেয়
     override fun getDetailedReport(
-        className: String,
+        classCode: String,
         month: String,
         year: String
     ): Flow<List<AttendanceEntity>> {
         return attendanceDao.getMonthlyAttendanceData(month, year).map { allRecords ->
             // সব ডাটা থেকে শুধু ওই ক্লাসের ডাটা ফিল্টার করে দিচ্ছি
-            allRecords.filter { it.classCode == className }
+            allRecords.filter { it.classCode == classCode }
         }
     }
 
@@ -118,7 +118,7 @@ class AttendanceRepositoryImpl @Inject constructor(
         return attendanceDao.getMonthlyAttendanceData(month, year)
     }
 
-    private fun calculateMonthlyReportModel(className: String, records: List<AttendanceEntity>): MonthlyReportModel {
+    private fun calculateMonthlyReportModel(classCode: String, records: List<AttendanceEntity>): MonthlyReportModel {
         // ১. গ্র্যান্ড টোটাল
         val total = records.size
         val present = records.count { it.status == "Present" }
@@ -138,7 +138,7 @@ class AttendanceRepositoryImpl @Inject constructor(
         val rate = if (total > 0) (present.toFloat() / total * 100f) else 0f
 
         return MonthlyReportModel(
-            className = className,
+            classCode = classCode,
             totalAttendance = total,
             presentCount = present,
             absentCount = absent,

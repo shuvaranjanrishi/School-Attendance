@@ -5,7 +5,7 @@ import java.time.Period
 import java.text.SimpleDateFormat
 import java.util.*
 
-object DateUtils {
+object DateTimeUtils {
     private const val DB_DATE_FORMAT = "dd-MM-yyyy"
 
     fun calculateDuration(selectedDate: LocalDate): String {
@@ -18,19 +18,14 @@ object DateUtils {
         return "${date.dayOfMonth}-${date.monthValue}-${date.year}"
     }
 
-//    fun getTodayDate(): String {
-//        return SimpleDateFormat(DB_DATE_FORMAT, Locale.US).format(Date())
-//    }
-
-    // মাসের জন্য সঠিক ফরম্যাট: "-MM-yyyy" (যেমন: "-01-2026")
     fun getCurrentMonth(): String = SimpleDateFormat("-MM-yyyy", Locale.getDefault()).format(Date())
-    // বছরের জন্য সঠিক ফরম্যাট: "-yyyy" (যেমন: "-2026")
     fun getCurrentYear(): String = SimpleDateFormat("-yyyy", Locale.getDefault()).format(Date())
 
-    // ১. আজকের তারিখের স্ট্রিং নেওয়ার সময় Locale.getDefault() দিন
     fun getTodayDate(): String {
-        // এখানে Locale.US এর বদলে Locale.getDefault() ব্যবহার করুন
         return SimpleDateFormat(DB_DATE_FORMAT, Locale.US).format(Date())
+    }
+    fun getFileCreatedDate(): String {
+        return SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault()).format(Date())
     }
 
     fun getDisplayDate(dateStr: String): String {
@@ -57,16 +52,12 @@ object DateUtils {
 
     fun getFormattedDate(month: String, year: String): String {
         return try {
-            // মাস এবং বছরকে একটি ডেট ফরম্যাটে নিয়ে আসা (যেমন: "01-2026")
             val sdfInput = SimpleDateFormat("MM-yyyy", Locale.US)
             val date = sdfInput.parse("$month-$year")
-
-            // এবার সেটাকে সুন্দর করে "January 2026" বা "জানুয়ারি ২০২৬" এ রূপান্তর করা
-            // Locale.getDefault() দিলে ইউজারের ভাষা অনুযায়ী মাস আসবে
             val sdfOutput = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
             date?.let { sdfOutput.format(it) } ?: "$month/$year"
         } catch (e: Exception) {
-            "$month/$year" // এরর হলে ব্যাকআপ হিসেবে সংখ্যাই দেখাবে
+            "$month/$year"
         }
     }
 }

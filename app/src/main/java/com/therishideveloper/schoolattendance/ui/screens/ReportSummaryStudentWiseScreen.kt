@@ -31,7 +31,7 @@ import com.therishideveloper.schoolattendance.ui.components.myTopBarColors
 import com.therishideveloper.schoolattendance.ui.viewmodels.ReportViewModel
 import com.therishideveloper.schoolattendance.utils.ClassTypes
 import com.therishideveloper.schoolattendance.utils.Constants
-import com.therishideveloper.schoolattendance.utils.DateUtils.getFormattedDate
+import com.therishideveloper.schoolattendance.utils.DateTimeUtils.getFormattedDate
 import com.therishideveloper.schoolattendance.utils.localizeDigitsAndLabels
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,7 +55,7 @@ fun ReportSummaryStudentWiseScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Column {
+                    Column(verticalArrangement = Arrangement.spacedBy((-4).dp)) {
                         Text(
                             stringResource(R.string.student_report),
                             fontSize = 18.sp,

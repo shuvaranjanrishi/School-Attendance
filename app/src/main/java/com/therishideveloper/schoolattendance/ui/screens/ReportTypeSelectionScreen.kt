@@ -4,11 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Assessment
-import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -16,19 +13,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.therishideveloper.schoolattendance.R
-import com.therishideveloper.schoolattendance.ui.components.AttendanceTable
-import com.therishideveloper.schoolattendance.ui.components.EmptyStateMessage
-import com.therishideveloper.schoolattendance.ui.components.LoadingOverlay
-import com.therishideveloper.schoolattendance.ui.components.ReportDownloadDialog
 import com.therishideveloper.schoolattendance.ui.components.myTopBarColors
-import com.therishideveloper.schoolattendance.ui.viewmodels.ReportViewModel
-import com.therishideveloper.schoolattendance.utils.DateUtils.getFormattedDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

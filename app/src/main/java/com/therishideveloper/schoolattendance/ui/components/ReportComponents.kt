@@ -55,7 +55,7 @@ import kotlin.collections.find
 fun ReportTopBar(title: String, subTitle: String, onMenuClick: () -> Unit) {
     TopAppBar(
         title = {
-            Column {
+            Column(verticalArrangement = Arrangement.spacedBy((-4).dp)) {
                 Text(title, fontWeight = FontWeight.Bold, fontSize = 18.sp)
                 Text(subTitle, fontSize = 12.sp, color = Color.White.copy(0.8f))
             }
@@ -71,7 +71,7 @@ fun ReportTopBar(title: String, subTitle: String, onMenuClick: () -> Unit) {
 
 @Composable
 fun ReportCard(report: MonthlyReportModel, onClick: () -> Unit) {
-    val classType = remember { ClassTypes.fromCode(report.className) }
+    val classType = remember { ClassTypes.fromCode(report.classCode) }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -218,7 +218,6 @@ fun AttendanceTable(attendanceData: List<AttendanceEntity>) {
     val days = (1..31).toList()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // টেবিল হেডার
         Row(modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant)) {
             TableCell(text = stringResource(R.string.label_name), width = 120.dp, isHeader = true)
             Row(modifier = Modifier.horizontalScroll(scrollState)) {
@@ -228,7 +227,6 @@ fun AttendanceTable(attendanceData: List<AttendanceEntity>) {
             }
         }
 
-        // ছাত্রছাত্রীদের তালিকা
         LazyColumn {
             items(groupedData.keys.toList()) { studentName ->
                 val studentRecords = groupedData[studentName] ?: emptyList()
@@ -269,7 +267,7 @@ fun TableCell(text: String, width: androidx.compose.ui.unit.Dp, isHeader: Boolea
         fontWeight = if (isHeader) FontWeight.Bold else FontWeight.Normal,
         fontSize = 12.sp,
         maxLines = 1,
-        textAlign = TextAlign.Center
+        textAlign = TextAlign.Left
     )
 }
 
@@ -316,7 +314,7 @@ fun ReportDownloadDialog(
                 Text(stringResource(R.string.download_confirm_msg, "$classCode ($date) [$format]"))
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = stringResource(R.string.file_location_msg),
+                    text = stringResource(R.string.report_location_msg),
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )

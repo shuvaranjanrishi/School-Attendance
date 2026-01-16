@@ -1,7 +1,7 @@
 package com.therishideveloper.schoolattendance.data.local.model
 
 data class ClassSummary(
-    val className: String,
+    val classCode: String,
     val totalStudents: Int,
     val totalPresent: Int,
     val totalAbsent: Int,

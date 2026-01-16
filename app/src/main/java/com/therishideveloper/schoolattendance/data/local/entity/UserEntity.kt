@@ -3,7 +3,7 @@ package com.therishideveloper.schoolattendance.data.local.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "user_profile")
+@Entity(tableName = "tbl_user")
 data class UserEntity(
     @PrimaryKey(autoGenerate = false)
     val id: Int = 1,

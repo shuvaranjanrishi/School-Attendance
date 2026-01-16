@@ -143,7 +143,7 @@ object PdfHelper {
         paint.isFakeBoldText = true
         paint.color = "#1976D2".toColorInt()
         paint.textAlign = Paint.Align.RIGHT
-        canvas.drawText("$devLabel: $devName", pageWidth - 40f, pageHeight - 25f, paint)
+        canvas.drawText("$devLabel: $devName", pageWidth - 40f, pageHeight - 30f, paint)
 
     }
 

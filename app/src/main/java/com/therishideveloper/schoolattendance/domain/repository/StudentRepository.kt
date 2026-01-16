@@ -12,7 +12,7 @@ interface StudentRepository {
 
     fun getStudentById(id: Int): Flow<StudentEntity?>
 
-    suspend fun getStudentByRollAndClass(roll: String, className: String): StudentEntity?
+    suspend fun getStudentByRollAndClass(roll: String, classCode: String): StudentEntity?
 
     fun searchStudents(query: String): Flow<List<StudentEntity>>
 
@@ -22,6 +22,6 @@ interface StudentRepository {
         genderFilter: String?
     ): Flow<List<StudentEntity>>
     suspend fun clearAllData()
-    suspend fun getStudentsByClass(className: String): List<StudentEntity>
+    suspend fun getStudentsByClass(classCode: String): List<StudentEntity>
     fun getTotalStudentsCount(): Flow<Int>
 }
