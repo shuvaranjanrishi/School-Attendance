@@ -147,11 +147,11 @@ fun AuthScreen(
                         }
                     }
                 }) {
-                    Text(if (fetchedQuestion == null) stringResource(R.string.btn_check) else stringResource(R.string.ok_btn))
+                    Text(if (fetchedQuestion == null) stringResource(R.string.btn_check) else stringResource(R.string.btn_ok))
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showForgetDialog = false }) { Text(stringResource(R.string.cancel_btn)) }
+                TextButton(onClick = { showForgetDialog = false }) { Text(stringResource(R.string.btn_cancel)) }
             }
         )
     }

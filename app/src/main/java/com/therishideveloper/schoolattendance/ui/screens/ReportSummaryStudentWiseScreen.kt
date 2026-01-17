@@ -217,7 +217,7 @@ fun MonthYearPickerDialog(
         },
         confirmButton = {
             Button(onClick = { onDateSelected(selectedMonth, selectedYear) }) {
-                Text(stringResource(R.string.ok_btn))
+                Text(stringResource(R.string.btn_ok))
             }
         },
         dismissButton = {

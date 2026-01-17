@@ -1,8 +1,6 @@
 package com.therishideveloper.schoolattendance.ui.screens
 
 import android.app.Activity
-import android.widget.Toast
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -269,7 +267,7 @@ fun SettingsConfirmDialog(type: SettingsDialogType, onConfirm: () -> Unit, onDis
                     containerColor = Color.Red
                 ) else ButtonDefaults.buttonColors()
             ) {
-                Text(stringResource(if (type == SettingsDialogType.DELETE_ALL) R.string.delete_btn else if (type == SettingsDialogType.BACKUP) R.string.backup_now else R.string.confirm))
+                Text(stringResource(if (type == SettingsDialogType.DELETE_ALL) R.string.btn_delete else if (type == SettingsDialogType.BACKUP) R.string.backup_now else R.string.confirm))
             }
         },
         dismissButton = {
@@ -355,7 +353,7 @@ fun RestartAppDialog(context: android.content.Context) {
         text = { Text(stringResource(R.string.restore_success_msg)) },
         confirmButton = {
             Button(onClick = { (context as? Activity)?.finishAffinity() }) {
-                Text(stringResource(R.string.exit_app_btn))
+                Text(stringResource(R.string.btn_exit_app))
             }
         }
     )
@@ -368,8 +366,9 @@ fun PasswordChangeSheet(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
     var currentPassword by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
-
+//    var passwordVisible by remember { mutableStateOf(false) }
+    var currentPasswordVisible by remember { mutableStateOf(false) }
+    var newPasswordVisible by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
     // English Comment: Listen for success event to close the sheet
@@ -408,7 +407,14 @@ fun PasswordChangeSheet(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
                 onValueChange = { currentPassword = it },
                 label = stringResource(R.string.current_password),
                 icon = Icons.Default.Lock,
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
+                visualTransformation = if (currentPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    val image =
+                        if (currentPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                    IconButton(onClick = { currentPasswordVisible = !currentPasswordVisible }) {
+                        Icon(image, contentDescription = null, modifier = Modifier.size(20.dp))
+                    }
+                }
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -419,7 +425,14 @@ fun PasswordChangeSheet(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
                 onValueChange = { newPassword = it },
                 label = stringResource(R.string.new_password),
                 icon = Icons.Default.Lock,
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
+                visualTransformation = if (newPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    val image =
+                        if (newPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                    IconButton(onClick = { newPasswordVisible = !newPasswordVisible }) {
+                        Icon(image, contentDescription = null, modifier = Modifier.size(20.dp))
+                    }
+                }
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -430,10 +443,11 @@ fun PasswordChangeSheet(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
                 onValueChange = { confirmPassword = it },
                 label = stringResource(R.string.confirm_new_password),
                 icon = Icons.Default.Lock,
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                visualTransformation = if (newPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
-                    val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
-                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    val image =
+                        if (newPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                    IconButton(onClick = { newPasswordVisible = !newPasswordVisible }) {
                         Icon(image, contentDescription = null, modifier = Modifier.size(20.dp))
                     }
                 }
@@ -453,7 +467,9 @@ fun PasswordChangeSheet(onDismiss: () -> Unit, viewModel: SettingsViewModel) {
                         showToast(context, context.getString(R.string.password_mismatch))
                     }
                 },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {

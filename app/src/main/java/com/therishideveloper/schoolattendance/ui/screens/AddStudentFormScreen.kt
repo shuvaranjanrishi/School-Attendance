@@ -2,10 +2,8 @@ package com.therishideveloper.schoolattendance.ui.screens
 
 import com.therishideveloper.schoolattendance.ui.components.OutlinedDateSection
 import com.therishideveloper.schoolattendance.ui.components.rememberAppImagePicker
-import android.content.Context
 import android.graphics.BitmapFactory
 import android.os.Build
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -45,8 +43,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import com.therishideveloper.schoolattendance.data.local.entity.StudentEntity
 import com.therishideveloper.schoolattendance.ui.viewmodels.StudentViewModel
 import kotlinx.coroutines.delay
@@ -56,19 +52,11 @@ import java.time.format.DateTimeFormatter
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import com.therishideveloper.schoolattendance.R
-import com.therishideveloper.schoolattendance.ui.screens.AddressSection
-import com.therishideveloper.schoolattendance.ui.screens.BloodGroupSection
-import com.therishideveloper.schoolattendance.ui.screens.ClassSelectionSection
-import com.therishideveloper.schoolattendance.ui.screens.ContactSection
-import com.therishideveloper.schoolattendance.ui.screens.FormActions
-import com.therishideveloper.schoolattendance.ui.screens.FormField
-import com.therishideveloper.schoolattendance.ui.screens.FormHeader
-import com.therishideveloper.schoolattendance.ui.screens.GenderSection
-import com.therishideveloper.schoolattendance.ui.screens.IdentificationSection
-import com.therishideveloper.schoolattendance.ui.screens.ReligionSection
-import com.therishideveloper.schoolattendance.ui.screens.VerticalSpace
+import com.therishideveloper.schoolattendance.ui.components.HorizontalSpace
+import com.therishideveloper.schoolattendance.ui.components.StudentReviewDialog
+import com.therishideveloper.schoolattendance.ui.components.VerticalSpace
 import com.therishideveloper.schoolattendance.ui.components.myTopBarColors
-import com.therishideveloper.schoolattendance.ui.screens.rememberStudentFormState
+import com.therishideveloper.schoolattendance.ui.components.showToast
 import com.therishideveloper.schoolattendance.utils.BloodGroupTypes
 import com.therishideveloper.schoolattendance.utils.ClassTypes
 import com.therishideveloper.schoolattendance.utils.CountryTypes
@@ -123,6 +111,7 @@ class StudentFormState(student: StudentEntity?) {
     var showDuplicateDialog by mutableStateOf(false)
     var duplicateName by mutableStateOf("")
     var duplicateGender by mutableStateOf("")
+    var showReviewDialog by mutableStateOf(false)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -169,7 +158,7 @@ fun AddStudentFormScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            FormHeader(isEditMode, state.selectedImage) { imagePicker.launch("image/*") }
+            FormHeader(state.selectedImage) { imagePicker.launch("image/*") }
             VerticalSpace(16)
             FormField(
                 stringResource(R.string.label_student_name_star),
@@ -189,7 +178,7 @@ fun AddStudentFormScreen(
                 KeyboardType.Number,
                 leadingIcon = Icons.Default.FormatListNumbered
             )
-
+            ClassSelectionSection(state)
             OutlinedDateSection(
                 label = stringResource(R.string.label_birth_date_star),
                 selectedDate = state.dateOfBirth.localizeDigitsAndLabels(),
@@ -218,7 +207,6 @@ fun AddStudentFormScreen(
                 leadingIcon = Icons.Default.Person
             )
 
-            ClassSelectionSection(state)
             GenderSection(state.gender) { state.gender = it }
             ReligionSection(state.religion) { state.religion = it }
             BloodGroupSection(state.bloodGroup) { state.bloodGroup = it }
@@ -244,6 +232,14 @@ fun AddStudentFormScreen(
                 onDismiss = onBack,
                 onConfirm = {
                     onConfirm(it)
+                    showToast(
+                        context,
+                        msg = if (isEditMode) {
+                            context.getString(R.string.student_updated)
+                        } else {
+                            context.getString(R.string.student_admitted)
+                        }
+                    )
                     onBack()
                 },
                 scrollState = scrollState
@@ -343,7 +339,7 @@ fun FormActions(
     VerticalSpace(24)
 
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-        TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel_btn)) }
+        TextButton(onClick = onDismiss) { Text(stringResource(R.string.btn_cancel)) }
         HorizontalSpace(8)
 
         Button(
@@ -363,37 +359,8 @@ fun FormActions(
                             state.duplicateGender = existingStudent.genderCode
                             state.showDuplicateDialog = true
                         } else {
-                            // Saving student data
-                            onConfirm(
-                                StudentEntity(
-                                    id = student?.id ?: 0,
-                                    name = state.name,
-                                    rollNo = state.roll,
-                                    dateOfBirth = state.dateOfBirth,
-                                    age = state.age,
-                                    nidOrBirthReg = state.nidOrBirthReg,
-                                    idType = state.idType,
-                                    classCode = state.sClass,
-                                    fatherName = state.fatherName,
-                                    motherName = state.motherName,
-                                    phone = "$code${state.phone}",
-                                    genderCode = state.gender,
-                                    religionCode = state.religion,
-                                    bloodGroup = state.bloodGroup,
-                                    address = state.address,
-                                    country = state.sCountry,
-                                    admissionDate = student?.admissionDate ?: state.admissionDate,
-                                    image = state.selectedImage
-                                )
-                            )
-                            showToast(
-                                context,
-                                msg = if (isEditMode) {
-                                    context.getString(R.string.student_updated)
-                                } else {
-                                    context.getString(R.string.student_admitted)
-                                }
-                            )
+                            // English Comment: Instead of saving directly, show review dialog
+                            state.showReviewDialog = true
                         }
                     }
                 } else {
@@ -414,14 +381,43 @@ fun FormActions(
                     }
                 }
             }) {
-            Text(
-                if (isEditMode) {
-                    stringResource(R.string.update_btn)
-                } else {
-                    stringResource(R.string.confirm_admission_btn)
-                }
-            )
+            Text(stringResource(R.string.btn_next))
         }
+    }
+
+// English Comment: Integration of Review Dialog
+    if (state.showReviewDialog) {
+        StudentReviewDialog(
+            isEditMode = isEditMode,
+            state = state,
+            onDismiss = { state.showReviewDialog = false },
+            onConfirm = {
+                val code = state.selectedCountryCode.split(" ")[1]
+                onConfirm(
+                    StudentEntity(
+                        id = student?.id ?: 0,
+                        name = state.name,
+                        rollNo = state.roll,
+                        dateOfBirth = state.dateOfBirth,
+                        age = state.age,
+                        nidOrBirthReg = state.nidOrBirthReg,
+                        idType = state.idType,
+                        classCode = state.sClass,
+                        fatherName = state.fatherName,
+                        motherName = state.motherName,
+                        phone = "$code${state.phone}",
+                        genderCode = state.gender,
+                        religionCode = state.religion,
+                        bloodGroup = state.bloodGroup,
+                        address = state.address,
+                        country = state.sCountry,
+                        admissionDate = student?.admissionDate ?: state.admissionDate,
+                        image = state.selectedImage
+                    )
+                )
+                state.showReviewDialog = false
+            }
+        )
     }
 
     // Duplicate Roll Alert Dialog
@@ -475,7 +471,7 @@ fun DuplicateRollDialog(state: StudentFormState) {
         },
         confirmButton = {
             Button(onClick = { state.showDuplicateDialog = false }) {
-                Text(stringResource(R.string.ok_btn))
+                Text(stringResource(R.string.btn_ok))
             }
         },
         shape = RoundedCornerShape(16.dp)
@@ -544,23 +540,9 @@ fun ContactSection(state: StudentFormState) {
 
 @Composable
 fun FormHeader(
-    isEditMode: Boolean,
     selectedImage: ByteArray?,
     onImageClick: () -> Unit
 ) {
-//    // Dialog Title
-//    Text(
-//        text = if (isEditMode) {
-//            stringResource(R.string.edit_information)
-//        } else {
-//            stringResource(R.string.admit_new_student)
-//        },
-//        style = MaterialTheme.typography.titleLarge,
-//        fontWeight = FontWeight.Bold,
-//    )
-//
-//    VerticalSpace(16)
-
     // Profile Image Picker UI
     Box(
         Modifier
@@ -610,14 +592,13 @@ fun ClassSelectionSection(state: StudentFormState) {
         onExpandedChange = { state.classExpanded = !state.classExpanded },
         modifier = Modifier.fillMaxWidth()
     ) {
-        // বর্তমানে সিলেক্ট করা কোড থেকে নাম বের করা
         val selectedClassName = stringResource(ClassTypes.fromCode(state.sClass).stringRes)
 
         OutlinedTextField(
             value = selectedClassName,
             onValueChange = {},
             readOnly = true,
-            label = { Text(stringResource(R.string.label_class)) }, // "শ্রেণী"
+            label = { Text(stringResource(R.string.label_class_star)) }, // "শ্রেণী"
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = state.classExpanded) },
             modifier = Modifier
                 .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
@@ -644,20 +625,6 @@ fun ClassSelectionSection(state: StudentFormState) {
             }
         }
     }
-}
-
-@Composable
-fun VerticalSpace(height: Int) {
-    Spacer(modifier = Modifier.height(height.dp))
-}
-
-@Composable
-fun HorizontalSpace(width: Int) {
-    Spacer(modifier = Modifier.width(width.dp))
-}
-
-fun showToast(context: Context, msg: String) {
-    Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
 }
 
 @Composable

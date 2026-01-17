@@ -321,10 +321,10 @@ fun ReportDownloadDialog(
             }
         },
         confirmButton = {
-            Button(onClick = onConfirm) { Text(stringResource(R.string.download_btn)) }
+            Button(onClick = onConfirm) { Text(stringResource(R.string.btn_download)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel_btn)) }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.btn_cancel)) }
         }
     )
 }

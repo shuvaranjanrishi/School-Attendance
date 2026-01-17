@@ -76,16 +76,15 @@
     <string name="download_confirm_msg">আপনি কি %1$s-এর প্রোফাইল পিডিএফ হিসেবে ডাউনলোড করতে চান?</string>
     <string name="profile_location_msg">অবস্থান: Downloads/School Attendance/Profiles</string>
     <string name="report_location_msg">Location: Downloads/School Attendance/Reports</string>
-    <string name="download_btn">ডাউনলোড</string>
+    <string name="btn_download">ডাউনলোড</string>
     <string name="call_title">কল করুন</string>
     <string name="call_msg">আপনি কি %1$s-এর অভিভাবককে কল করতে চান?</string>
-    <string name="call_btn">এখনই কল করুন</string>
-    <string name="ok_btn">ঠিক আছে</string>
-    <string name="cancel_btn">বাতিল</string>
+    <string name="btn_call">এখনই কল করুন</string>
+    <string name="btn_ok">ঠিক আছে</string>
     <string name="delete_title">প্রোফাইল মুছুন</string>
     <string name="delete_msg">আপনি কি নিশ্চিত যে এই শিক্ষার্থীর সব তথ্য মুছে ফেলতে চান?</string>
-    <string name="delete_confirm_btn">হ্যাঁ, মুছুন</string>
-    <string name="delete_profile_btn">প্রোফাইল মুছে ফেলুন</string>
+    <string name="btn_delete_confirm">হ্যাঁ, মুছুন</string>
+    <string name="btn_delete_profile">প্রোফাইল মুছে ফেলুন</string>
     <string name="error_msg">কিছু ভুল হয়েছে!</string>
     <string name="empty_student_msg">শিক্ষার্থীর তথ্য পাওয়া যায়নি!</string>
 
@@ -124,6 +123,7 @@
 
     <string name="label_student_name_star">শিক্ষার্থীর নাম *</string>
     <string name="label_roll_star">রোল নম্বর *</string>
+    <string name="label_class_star">শ্রেণী *</string>
     <string name="label_phone_star">মোবাইল *</string>
     <string name="label_birth_date_star">জন্ম তারিখ *</string>
     <string name="hint_present_age">বর্তমান বয়স</string>
@@ -131,8 +131,8 @@
     <string name="give_student_name">শিক্ষার্থীর নাম লিখুন</string>
     <string name="give_student_roll">শিক্ষার্থীর রোল নম্বর দিন</string>
     <string name="give_correct_phone_no">সঠিক (১০ ডিজিটের) মোবাইল নম্বর দিন</string>
-    <string name="update_btn">আপডেট করুন</string>
-    <string name="confirm_admission_btn">ভর্তি নিশ্চিত করুন</string>
+    <string name="btn_update">আপডেট করুন</string>
+    <string name="btn_confirm_admission">ভর্তি নিশ্চিত করুন</string>
     <string name="student_updated">শিক্ষার্থীর তথ্য সফলভাবে আপডেট করা হয়েছে</string>
     <string name="student_admitted">শিক্ষার্থী সফলভাবে ভর্তি করা হয়েছে</string>
 
@@ -186,7 +186,7 @@
     <string name="backup_success_msg">ডাটা ব্যাকআপ সফলভাবে সম্পন্ন হয়েছে।</string>
     <string name="restore_success_msg">ডাটা সফলভাবে রিস্টোর হয়েছে, দয়া করে অ্যাপটি পুনরায় চালু করুন।</string>
     <string name="restore_success_title">রিস্টোর সম্পন্ন</string>
-    <string name="exit_app_btn">অ্যাপ বন্ধ করুন</string>
+    <string name="btn_exit_app">অ্যাপ বন্ধ করুন</string>
 
     <string name="section_advanced_settings">অ্যাডভান্সড সেটিংস</string>
     <string name="all_data_cleared">সব ডাটা সফলভাবে মুছে ফেলা হয়েছে!</string>
@@ -194,7 +194,7 @@
     <string name="delete_data_desc">এটি আপনার সব শিক্ষার্থীর তথ্য এবং উপস্থিতির রেকর্ড স্থায়ীভাবে মুছে দেবে।</string>
     <string name="delete_confirm_title">আপনি কি নিশ্চিত?</string>
     <string name="delete_confirm_msg">এই কাজটি আর ফেরত নেওয়া যাবে না। আপনার সব ডেটা ডিলিট হয়ে যাবে।</string>
-    <string name="delete_btn">ডিলিট করুন</string>
+    <string name="btn_delete">ডিলিট করুন</string>
 
     <string name="title_school_profile">স্কুল প্রোফাইল</string>
     <string name="label_edit">এডিট</string>
@@ -371,4 +371,8 @@
     <string name="yes">হ্যাঁ</string>
     <string name="no">না</string>
     <string name="logout_success">সফলভাবে লগআউট হয়েছে!</string>
+
+    <string name="review_info_title">তথ্য যাচাই করুন</string>
+    <string name="btn_next">পরবর্তী</string>
+    <string name="label_not_provided">দেওয়া হয়নি</string>
 </resources>

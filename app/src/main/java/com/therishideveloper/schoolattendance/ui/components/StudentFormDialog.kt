@@ -1,4 +1,4 @@
-package com.therishideveloper.schoolattendance.ui.components
+//package com.therishideveloper.schoolattendance.ui.components
 
 import android.content.Context
 import android.graphics.BitmapFactory
@@ -626,19 +626,19 @@ import kotlinx.coroutines.CoroutineScope
 //    }
 //}
 //
-@Composable
-fun VerticalSpace(height: Int) {
-    Spacer(modifier = Modifier.height(height.dp))
-}
-//
-@Composable
-fun HorizontalSpace(width: Int) {
-    Spacer(modifier = Modifier.width(width.dp))
-}
-//
-fun showToast(context: Context, msg: String) {
-    Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
-}
+//@Composable
+//fun VerticalSpace(height: Int) {
+//    Spacer(modifier = Modifier.height(height.dp))
+//}
+////
+//@Composable
+//fun HorizontalSpace(width: Int) {
+//    Spacer(modifier = Modifier.width(width.dp))
+//}
+////
+//fun showToast(context: Context, msg: String) {
+//    Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+//}
 //
 //@Composable
 //fun FormField(

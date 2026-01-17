@@ -31,6 +31,7 @@ import com.therishideveloper.schoolattendance.utils.Result
 import androidx.core.net.toUri
 import com.therishideveloper.schoolattendance.R
 import com.therishideveloper.schoolattendance.ui.components.LoadingOverlay
+import com.therishideveloper.schoolattendance.ui.components.showToast
 //import com.therishideveloper.schoolattendance.ui.components.showToast
 import com.therishideveloper.schoolattendance.ui.event.UiEvent
 import com.therishideveloper.schoolattendance.ui.navigation.Screen
@@ -400,12 +401,12 @@ fun DetailDialogs(
                     onDismissDownload()
                     viewModel.downloadStudentProfilePdf(student)
                 }) {
-                    Text(stringResource(R.string.download_btn))
+                    Text(stringResource(R.string.btn_download))
                 }
             },
             dismissButton = {
                 TextButton(onClick = onDismissDownload) {
-                    Text(stringResource(R.string.cancel_btn))
+                    Text(stringResource(R.string.btn_cancel))
                 }
             }
         )
@@ -429,9 +430,9 @@ fun DetailDialogs(
                             "tel:${student.phone}".toUri()
                     }
                     context.startActivity(intent)
-                }) { Text(stringResource(R.string.call_btn)) }
+                }) { Text(stringResource(R.string.btn_call)) }
             },
-            dismissButton = { TextButton(onClick = onDismissCall) { Text(stringResource(R.string.cancel_btn)) } }
+            dismissButton = { TextButton(onClick = onDismissCall) { Text(stringResource(R.string.btn_cancel)) } }
         )
     }
 
@@ -448,9 +449,9 @@ fun DetailDialogs(
                         navController.popBackStack()
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-                ) { Text(stringResource(R.string.delete_confirm_btn), color = Color.White) }
+                ) { Text(stringResource(R.string.btn_delete_confirm), color = Color.White) }
             },
-            dismissButton = { TextButton(onClick = onDismissDelete) { Text(stringResource(R.string.cancel_btn)) } }
+            dismissButton = { TextButton(onClick = onDismissDelete) { Text(stringResource(R.string.btn_cancel)) } }
         )
     }
 
@@ -483,7 +484,7 @@ fun DeleteProfileButton(onDeleteClick: () -> Unit) {
     ) {
         Icon(Icons.Default.DeleteOutline, null, tint = Color.Red)
         Spacer(Modifier.width(8.dp))
-        Text(stringResource(R.string.delete_profile_btn), color = Color.Red)
+        Text(stringResource(R.string.btn_delete_profile), color = Color.Red)
     }
 }
 

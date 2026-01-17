@@ -1,8 +1,13 @@
 package com.therishideveloper.schoolattendance.ui.components
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -47,4 +52,18 @@ fun CircularProgress(
             color = progressColor
         )
     }
+}
+
+@Composable
+fun VerticalSpace(height: Int) {
+    Spacer(modifier = Modifier.height(height.dp))
+}
+
+@Composable
+fun HorizontalSpace(width: Int) {
+    Spacer(modifier = Modifier.width(width.dp))
+}
+
+fun showToast(context: Context, msg: String) {
+    Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
 }

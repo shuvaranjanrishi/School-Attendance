@@ -66,10 +66,10 @@ private fun CommonDatePickerDialog(
                             onDateSelected(formatDateToString(date), calculateDuration(date))
                         }
                         onDismiss()
-                    }) { Text(stringResource(R.string.ok_btn)) }
+                    }) { Text(stringResource(R.string.btn_ok)) }
                 },
                 dismissButton = {
-                    TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel_btn)) }
+                    TextButton(onClick = onDismiss) { Text(stringResource(R.string.btn_cancel)) }
                 }
             ) {
                 DatePicker(state = datePickerState)
@@ -87,10 +87,8 @@ fun AttendanceDatePicker(
     onDateSelected: (String) -> Unit
 ) {
     if (showDialog) {
-        // বর্তমান অ্যাপের ভাষাটি খুঁজে বের করা
         val currentLocale = LocalConfiguration.current.locales[0]
 
-        // DateUtils ব্যবহার করে স্ট্রিং থেকে মিলিসেকেন্ড নেওয়া
         val currentMillis = remember(initialDate) { DateTimeUtils.dateToMillis(initialDate) }
 
         val datePickerState = rememberDatePickerState(
@@ -113,17 +111,16 @@ fun AttendanceDatePicker(
                 confirmButton = {
                     TextButton(onClick = {
                         datePickerState.selectedDateMillis?.let { millis ->
-                            // DateUtils ব্যবহার করে মিলিসেকেন্ড থেকে স্ট্রিং ফরম্যাটে রূপান্তর
                             onDateSelected(DateTimeUtils.millisToDate(millis))
                         }
                         onDismiss()
                     }) {
-                        Text(stringResource(R.string.ok_btn), fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.btn_ok), fontWeight = FontWeight.Bold)
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = onDismiss) {
-                        Text(stringResource(R.string.cancel_btn))
+                        Text(stringResource(R.string.btn_cancel))
                     }
                 }
             ) {
@@ -132,71 +129,6 @@ fun AttendanceDatePicker(
         }
     }
 }
-
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun AttendanceDatePicker(
-//    showDialog: Boolean,
-//    initialDate: String,
-//    onDismiss: () -> Unit,
-//    onDateSelected: (String) -> Unit
-//) {
-//    if (showDialog) {
-//        val currentLocale = LocalConfiguration.current.locales[0]
-//        val currentMillis = remember(initialDate) {
-//            try {
-//                SimpleDateFormat("dd-MM-yyyy", Locale.US).parse(initialDate)?.time
-//                    ?: System.currentTimeMillis()
-//            } catch (e: Exception) {
-//                System.currentTimeMillis()
-//            }
-//        }
-//
-//        val datePickerState = rememberDatePickerState(
-//            initialSelectedDateMillis = currentMillis,
-//            selectableDates = object : SelectableDates {
-//                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-//                    val today = Calendar.getInstance().apply {
-//                        set(Calendar.HOUR_OF_DAY, 23)
-//                        set(Calendar.MINUTE, 59)
-//                    }.timeInMillis
-//                    return utcTimeMillis <= today
-//                }
-//            }
-//        )
-//
-//        CompositionLocalProvider(
-//            LocalConfiguration provides
-//                LocalConfiguration.current.apply {
-//                    setLocale(currentLocale)
-//                }
-//        ) {
-//            DatePickerDialog(
-//                onDismissRequest = onDismiss,
-//                confirmButton = {
-//                    TextButton(onClick = {
-//                        datePickerState.selectedDateMillis?.let { millis ->
-//                            val formattedDate = SimpleDateFormat("dd-MM-yyyy", Locale.US).format(
-//                                Date(millis)
-//                            )
-//                            onDateSelected(formattedDate)
-//                        }
-//                        onDismiss()
-//                    }) {
-//                        Text(stringResource(R.string.ok_btn), fontWeight = FontWeight.Bold)
-//                    }
-//                },
-//                dismissButton = {
-//                    TextButton(onClick = onDismiss) {
-//                        Text(stringResource(R.string.cancel_btn))
-//                    }
-//                }
-//            ) {
-//                DatePicker(state = datePickerState)
-//            }
-//        }
-//    }
-//}
 
 @Composable
 fun OutlinedDateSection(
